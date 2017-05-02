@@ -1,7 +1,7 @@
-import {TestBed} from "@angular/core/testing";
-import {Component} from "@angular/core";
-import {By} from "@angular/platform-browser";
-import {DynamicIdDirective} from "./dynamic-id.directive";
+import { TestBed, ComponentFixture } from "@angular/core/testing";
+import { Component, Type, DebugElement } from "@angular/core";
+import { By } from "@angular/platform-browser";
+import { DynamicIdDirective } from "./dynamic-id.directive";
 
 @Component({
     template: `
@@ -14,16 +14,16 @@ class TestComponent {
 
 describe("DynamicIdDirective test suite", () => {
 
-    let fixture,
-        directives;
+    let fixture: ComponentFixture<TestComponent>,
+        directives: DebugElement[];
 
     beforeEach(() => {
 
-        fixture = TestBed.configureTestingModule(
-            {
-                declarations: [DynamicIdDirective, TestComponent]
-            }
-        ).createComponent(TestComponent);
+        fixture = TestBed.configureTestingModule({
+
+            declarations: [DynamicIdDirective, TestComponent]
+
+        }).createComponent(TestComponent as Type<TestComponent>);
 
         fixture.detectChanges();
 

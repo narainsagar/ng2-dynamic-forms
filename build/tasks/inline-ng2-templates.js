@@ -1,15 +1,17 @@
-var gulp = require("gulp"),
+let gulp = require("gulp"),
     deleteLines = require("gulp-delete-lines"),
     htmlMinifier = require("html-minifier"),
     inlineNg2Template = require("gulp-inline-ng2-template");
 
 module.exports = function (src, dest) {
 
-    return function (done) {
+    return function (/*done*/) {
 
         function minify(path, ext, file, callback) {
+
             try {
-                var minifiedFile = htmlMinifier.minify(file, {
+
+                let minifiedFile = htmlMinifier.minify(file, {
                     collapseWhitespace: true,
                     caseSensitive: true,
                     removeComments: true,
@@ -25,7 +27,7 @@ module.exports = function (src, dest) {
 
         return gulp.src(src)
                    .pipe(deleteLines({
-                       'filters': [/moduleId: module.id/]
+                       "filters": [/moduleId: module.id/]
                    }))
                    .pipe(inlineNg2Template({
                        base: dest,

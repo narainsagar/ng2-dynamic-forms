@@ -1,4 +1,3 @@
-import {Validators} from "@angular/forms";
 import {
     DynamicCheckboxModel,
     DynamicCheckboxGroupModel,
@@ -11,7 +10,6 @@ import {
 } from "@ng2-dynamic-forms/core";
 
 export const BOOTSTRAP_EXAMPLE_MODEL = [
-
 
     new DynamicFormGroupModel({
 
@@ -44,6 +42,7 @@ export const BOOTSTRAP_EXAMPLE_MODEL = [
                 },
                 {
                     element: {
+                        container: "form-group",
                         label: "control-label"
                     },
                     grid: {
@@ -62,13 +61,18 @@ export const BOOTSTRAP_EXAMPLE_MODEL = [
                     placeholder: "example input",
                     prefix: "Prefix",
                     suffix: "Suffix",
-                    validators: [Validators.required],
+                    validators: {
+                        required: null,
+                        maxLength: 5
+                    },
                     errorMessages: {
-                        required: "{{label}} is required"
+                        required: "{{label}} is required",
+                        maxLength: "Max character count is 5"
                     }
                 },
                 {
                     element: {
+                        container: "form-group",
                         label: "control-label"
                     },
                     grid: {
@@ -102,6 +106,7 @@ export const BOOTSTRAP_EXAMPLE_MODEL = [
                 },
                 {
                     element: {
+                        container: "form-group",
                         label: "control-label"
                     },
                     grid: {
@@ -144,6 +149,7 @@ export const BOOTSTRAP_EXAMPLE_MODEL = [
                 },
                 {
                     element: {
+                        container: "form-group",
                         label: "control-label"
                     },
                     grid: {
@@ -165,8 +171,8 @@ export const BOOTSTRAP_EXAMPLE_MODEL = [
                             connective: "OR",
                             when: [
                                 {
-                                    id: "bootstrapSelect",
-                                    value: "option-4"
+                                    id: "bootstrapRadioGroup",
+                                    value: "option-2"
                                 },
                                 {
                                     id: "bootstrapRadioGroup",
@@ -178,6 +184,7 @@ export const BOOTSTRAP_EXAMPLE_MODEL = [
                 },
                 {
                     element: {
+                        container: "form-group",
                         label: "control-label"
                     },
                     grid: {
@@ -193,6 +200,9 @@ export const BOOTSTRAP_EXAMPLE_MODEL = [
                     label: "I do agree"
                 },
                 {
+                    element: {
+                        container: "form-group"
+                    },
                     grid: {
                         control: "col-sm-offset-3 col-sm-9"
                     }
@@ -222,6 +232,7 @@ export const BOOTSTRAP_EXAMPLE_MODEL = [
                 },
                 {
                     element: {
+                        container: "form-group form-array",
                         label: "control-label"
                     },
                     grid: {

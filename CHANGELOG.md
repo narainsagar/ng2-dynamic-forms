@@ -1,8 +1,397 @@
-# 1.1.4
+# 1.4.7
+
+### **Bugfixes**
+
+* `FileList` is now correctly read from file inputs (closes [#304](https://github.com/udos86/ng2-dynamic-forms/issues/304))
 
 ### **Features** 
 
-* updated to `@angular 2.2`
+* **initial UI support for NG Bootstrap** (closes [#278](https://github.com/udos86/ng2-dynamic-forms/issues/278))
+* **npm packages now contain an additional ES bundle for tree-shaking improvements**  
+* **new** `DynamicTimePickerModel` **added**
+* initial timepicker support in `ui-ionic`, `ui-ng-bootstrap` and `ui-primeng`
+* update to PrimeNG `4.0.0` (closes [#340](https://github.com/udos86/ng2-dynamic-forms/issues/340))
+* Remaining `noImplicitAny: true` TypeScript errors have been removed (closes [#345](https://github.com/udos86/ng2-dynamic-forms/issues/344))
+
+
+# 1.4.6
+
+### **Features** 
+
+* initial checkbox, input, radio group and textarea support in `ui-kendo`
+* `moveFormGroupControl()` function added to `DynamicFormService` (closes [#339](https://github.com/udos86/ng2-dynamic-forms/issues/339))
+
+# 1.4.5
+
+### **Breaking Change**
+
+`DynamicDatepickerModel` has been renamed to `DynamicDatePickerModel`
+
+### **Features** 
+
+* `placeholder` property added to `DynamicDateControlModel`
+* initial datepicker support in `ui-kendo`
+
+
+# 1.4.4
+
+### **Features** 
+
+* **`DynamicFormBootstrapComponent` now has new `@Input() asBootstrapFormGroup`:**
+This is a major improvement to make complex form layouts more easy to achieve. 
+By default `form-group` CSS class now **is not set** for nested form models anymore. 
+
+
+# 1.4.3
+
+### **Features** 
+
+* **Initial UI support for Ionic 2** 
+* `README.md` files of UI packages now contain form control overview 
+
+
+# 1.4.2
+
+### **Features** 
+
+* **update to Angular Material beta.3** 
+* `multiple` now working for `DynamicSelectModel` in `ui-material`
+* `md-error` added for `DynamicInputModel` and `DynamicTextareaModel` in `ui-material`
+
+
+# 1.4.1
+
+### **Features** 
+
+* inital support for `DynamicEditorModel` in `ui-primeng` (closes [#317](https://github.com/udos86/ng2-dynamic-forms/issues/317))
+* `format` property added to `DynamicDateControl` (closes [#318](https://github.com/udos86/ng2-dynamic-forms/issues/318))
+* checkbox and radio button labels are now clickable in `ui-primeng` (closes [#319](https://github.com/udos86/ng2-dynamic-forms/issues/319))
+* inital support for `Dateinput` in `ui-kendo` 
+
+
+# 1.4.0
+
+### **Deprecated APIs**
+
+* `[controlGroup]` **input binding of** `DynamicFormControlComponent` **is now deprecated! Use** `[group]` **instead!**
+
+### **Bugfixes** 
+
+* `moduleId` is now removed from distributed component *.ts files (closes [#301](https://github.com/udos86/ng2-dynamic-forms/issues/301))
+
+### **Features** 
+
+* **Update to Angular 4** (closes [#292](https://github.com/udos86/ng2-dynamic-forms/issues/292))
+                      
+
+# 1.3.18
+
+### **Bugfixes** 
+
+* validation messages now working in nested form groups in `ui-material` and `ui-primeng` (closes [#294](https://github.com/udos86/ng2-dynamic-forms/issues/294))
+
+
+# 1.3.17
+
+### **Features** 
+
+* added `module` and `typings` properties to `package.json` to fix Rollup "MISSING IMPORTS" error (probably closes [#267](https://github.com/udos86/ng2-dynamic-forms/issues/267))
+* `DynamicFormArrayModel` typings adjusted (closes [#289](https://github.com/udos86/ng2-dynamic-forms/issues/289))
+
+
+# 1.3.16
+
+### **Features** 
+
+* custom template support in `ui-primeng` (see example)
+
+
+# 1.3.15
+
+### **Bugfixes** 
+
+* custom templates are now working in deep nested dynamic form control components (closes [#280](https://github.com/udos86/ng2-dynamic-forms/issues/280))
+ 
+### **Features** 
+
+* `findById()` function of `DynamicFormService` is now capable of looking up nested form group models (closes [#286](https://github.com/udos86/ng2-dynamic-forms/issues/286))
+* initial support for `Chips` in `ui-primeng` (closes [#275](https://github.com/udos86/ng2-dynamic-forms/issues/275))
+* example code refactored
+
+
+# 1.3.14
+
+### **Features** 
+
+* custom `NG_VALIDATORS` now working when using Angular CLI without `webpack.config` (closes [#271](https://github.com/udos86/ng2-dynamic-forms/issues/271))
+* initial addition of file control models
+* initial support for `Upload` in `ui-kendo` 
+* update to Angular `2.4.8`
+* update to `@angular/material beta.2`
+
+
+# 1.3.13
+
+### **Features** 
+
+* Template alignment can now be determined by `align` property (closes [#264](https://github.com/udos86/ng2-dynamic-forms/issues/264))
+* Templates can now be reused by using `modelType` property (closes [#265](https://github.com/udos86/ng2-dynamic-forms/issues/265))
+ 
+
+# 1.3.12
+
+### **Bugfixes** 
+
+* dev mode template change detection bug fixed (closes [#266](https://github.com/udos86/ng2-dynamic-forms/issues/280))
+ 
+### **Features** 
+
+* update to Angular `2.4.7`
+* update to Prime NG `2.0.0`
+
+
+# 1.3.11
+
+### **Features** 
+
+* AoT-Compiling is now officially supported
+* major template refactoring in all UI modules 
+* `max` and `min` support for calendar in `ui-kendo`
+* update to Angular `2.4.6`
+
+
+# 1.3.10
+
+### **Features** 
+
+* initial addition of date control models
+* initial support for `Calendar` in `ui-kendo` and `ui-primeng`
+* `fromJSON(json: string | Object[])` function refactored to accept raw JSON strings and to revive `Date` objects
+* update to Angular `2.4.5`
+
+
+# 1.3.9
+
+### **Features** 
+
+* functions to add and remove form controls after initialization added in `DynamicFormService` (closes [#252](https://github.com/udos86/ng2-dynamic-forms/issues/252))
+* initial support for `AutoComplete`, `MaskedTextBox` and `NumericTextBox` in `ui-kendo`
+* update to Angular `2.4.4`
+
+
+# 1.3.8
+
+### **Features** 
+
+* support for Kendo UI template directives added (see [README.md](https://github.com/udos86/ng2-dynamic-forms#custom-templates), closes [#247](https://github.com/udos86/ng2-dynamic-forms/issues/247))
+* initial multi select support added in `ui-kendo`
+* update to Angular `2.4.3`
+
+
+# 1.3.7
+
+### **Features** 
+
+* error messaging enabled in `ui-material` and `ui-primeng` (closes [#240](https://github.com/udos86/ng2-dynamic-forms/issues/240))
+* update to Angular `2.4.2` 
+
+
+# 1.3.6
+
+### **Bugfixes** 
+
+* Caret now visible in Firefox (closes [#237](https://github.com/udos86/ng2-dynamic-forms/issues/237))
+ 
+### **Features** 
+
+* validator properties can now be referenced in error messages (see [README.md](https://github.com/udos86/ng2-dynamic-forms/tree/development#validation-messaging))
+
+
+# 1.3.5
+
+### **Features** 
+
+* `DynamicFormService` has now a function `moveFormArrayGroup(index: number, step: number, formArray: FormArray, model: DynamicFormArrayModel)` 
+to dynamically move form array elements (see updated [**live example**](http://ng2-dynamic-forms.udos86.de/example/))
+* `get(index: number)` function added to `DynamicFormArrayGroupModel`
+* `[(ngModel)]` could be completely removed from `ui-primeng` template at last 
+
+
+# 1.3.4
+
+### **Features** 
+
+**!!! IMPORTANT !!!** 
+
+**Adding custom templates has become more powerful!**
+
+**You now need to assign a** `modelId` **attribute to any of your custom templates.** 
+
+**Please see new chapter in [README.md](https://github.com/udos86/ng2-dynamic-forms/tree/development#custom-templates) and updated examples!**
+
+* update to `@angular 2.4.1`
+* update to `@angular/material beta.1`
+* `@Input() showCharacterHint` added in `DynamicFormMaterialComponent`
+* `DynamicSelectModel` now enabled in `ui-kendo`
+
+
+# 1.3.3
+
+### **Bugfixes** 
+
+* `DynamicFormsCoreModule` now working when used in async routes (closes [#212](https://github.com/udos86/ng2-dynamic-forms/issues/212))
+ 
+### **Features** 
+
+* async routing example added to demo application
+* template improvements for checkboxes (closes [#214](https://github.com/udos86/ng2-dynamic-forms/issues/214))
+* `hint` property added to `Cls` interface
+
+# 1.3.2
+
+### **Bugfixes** 
+
+* `DynamicSliderModel` and `DynamicSwitchModel` are now correctly deserialized from JSON
+ 
+### **Features** 
+
+* `min` and `max` typing updated (closes [#206](https://github.com/udos86/ng2-dynamic-forms/issues/206))
+* update to `@angular 2.3.1`
+* update to `foundation 6.3.0`
+* update to `primeng 1.1.0`
+
+
+# 1.3.1
+
+### **Bugfixes** 
+
+* custom validator functions are now correctly detected in model configuration (closes [#200](https://github.com/udos86/ng2-dynamic-forms/issues/200))
+ 
+### **Features** 
+
+* `DynamicSliderModel` added (working in `ui-material`, `ui-kendo`, `ui-primeng`)
+* `DynamicSelectModel` now working in `ui-material`
+* `hint` now working in `ui-basic` (closes [#203](https://github.com/udos86/ng2-dynamic-forms/issues/203))
+* update to `@angular 2.3.0`
+* update to `rxjs rc.4`
+* update to `zone.js 0.7.2`
+* update to `@angular-material alpha-11.3`
+
+
+# 1.3.0
+
+### **Breaking Changes**
+
+**!!! IMPORTANT !!!** All `Validators` of any `DynamicFormControlModel` now need to be configured by a simply object literal (similar to `errorMessages`) instead of an `Array<ValidatorFn | AsyncValidatorFn>`.
+
+This change was unavoidable to allow proper serialization for all validators as well as a significant code reduction 
+(closes [#200](https://github.com/udos86/ng2-dynamic-forms/issues/200))!.
+
+Defining validators becomes even more easy now!
+
+**Before:**
+```ts
+new DynamicInputModel({
+
+    id: "myInput",
+    validators: [Validators.required, Validators.minLength(3)]
+})
+```
+
+**After:**
+```ts
+new DynamicInputModel({
+
+    id: "myInput",
+    validators: {
+        required: null,
+        minLength: 3
+    }
+})
+```
+
+**Please see updated [example](https://github.com/udos86/ng2-dynamic-forms/tree/master/example) for practical use!!!**
+
+### **Features** 
+
+* `ui-material` now supports `offLabel` and `onLabel` properties of `DynamicSwitchModel`
+(see [**Material example**](https://github.com/udos86/ng2-dynamic-forms/tree/master/example/app/material))
+* update to `@angular 2.2.4`
+
+
+# 1.2.5
+
+### **Bugfixes** 
+
+* `change` **event handler in** `DynamicFormBasicComponent` **corrected** (closes [#197](https://github.com/udos86/ng2-dynamic-forms/issues/197))
+ 
+
+# 1.2.4
+
+### **Bugfixes** 
+
+* **bad** `@angular/material` **import removed from** `DynamicFormControlComponent` (closes [#194](https://github.com/udos86/ng2-dynamic-forms/issues/194))
+ 
+
+# 1.2.3
+
+### **Features** 
+
+* `ui-foundation` and `ui-primeng` now support `DynamicSwitchModel`
+* `DynamicSwitchModel` now has `offLabel` and `onLabel` properties
+* `DynamicFormControlRelationModel` refactored and `DynamicFormRelationService` introduced 
+* template files optimized
+* update to tslint `4.0.0`
+
+# 1.2.2
+
+### **Bugfixes** 
+
+* `DynamicCheckboxGroupModel` **internally works identical to** `DynamicFormGroupModel` **now in order to make property bindings work correctly** 
+(closes [#172](https://github.com/udos86/ng2-dynamic-forms/issues/172) and [#189](https://github.com/udos86/ng2-dynamic-forms/issues/189))
+ 
+### **Features** 
+
+* **!!! IMPORTANT !!!** `blur, focus, change` events are now emitted for single checkbox in a `DynamicCheckboxGroupModel` instead of the whole group
+* `@angular/material` change events are now correctly included in `DynamicFormControlEvent`
+* update to `@angular 2.2.3`
+* update to `primeng 1.0.0`
+
+
+# 1.2.1
+
+### **Bugfixes** 
+
+* `addGroup()` **function of** `DynamicFormArrayModel` **does now work correctly** (closes [#183](https://github.com/udos86/ng2-dynamic-forms/issues/183))
+ 
+### **Features** 
+
+* update to `@angular 2.2.1`
+* update to `primeng rc.5`
+* `add()`, `insert()` and `remove()` function added to `DynamicOptionControlModel` (closes [#180](https://github.com/udos86/ng2-dynamic-forms/issues/180))
+
+
+# 1.2.0
+
+### **Breaking Changes** 
+
+* `DynamicFormControlComponent` **does now emit a** `DynamicFormControlEvent` **on blur, change and focus instead of simply passing through** `$event`:
+ ```
+ export interface DynamicFormControlEvent {
+     
+     $event: Event | FocusEvent;
+     control: FormControl;
+     model: DynamicFormControlModel;
+ }
+ ```
+* **blur, change and focus events are only emitted for single form controls and checkbox groups from now on** (see Bootstrap example)
+
+### **Features** 
+
+* update to `@angular 2.2.0`
+* update to `@angular/material alpha.10`
+* update to `primeng rc.4`
+* `valueUpdates Rx.Subject` can now safely be used from anywhere to listen to new values
 * `checked` setter/getter and `toggle()` function added to `DynamicCheckControlModel`
 * `checkAll()` and `uncheckAll()` function added to `DynamicCheckboxGroupModel`
 * `select()` and `get()` function added to `DynamicOptionControlModel`
@@ -19,10 +408,6 @@
 
 # 1.1.2
 
-### **Breaking Changes** 
-
-* none 
-
 ### **Bugfixes** 
 
 * `validators` deserialization fixed (closes [#163](https://github.com/udos86/ng2-dynamic-forms/issues/163)) 
@@ -35,10 +420,6 @@
 
 # 1.1.1
 
-### **Breaking Changes** 
-
-* none 
-
 ### **Bugfixes** 
 
 * `DynamicCheckboxGroupModel` template bugs fixed (closes [#160](https://github.com/udos86/ng2-dynamic-forms/issues/160)) 
@@ -50,14 +431,6 @@
 
 # 1.1.0
 
-### **Breaking Changes** 
-
-* none 
-
-### **Bugfixes** 
-
-* none
-
 ### **Features**
 
 * Error Messaging system to `ui-bootstrap` and `ui-foundation` added (closes [#153](https://github.com/udos86/ng2-dynamic-forms/issues/153) 
@@ -67,10 +440,6 @@
 
 
 # 1.0.7
-
-### **Breaking Changes** 
-
-* none 
 
 ### **Bugfixes** 
 
@@ -83,10 +452,6 @@
 
 # 1.0.5
 
-### **Breaking Changes** 
-
-* none 
-
 ### **Bugfixes** 
 
 * support for nested `templates`(closes [#139](https://github.com/udos86/ng2-dynamic-forms/issues/139)) 
@@ -98,14 +463,6 @@
 
 # 1.0.4
 
-### **Breaking Changes** 
-
-* none 
-
-### **Bugfixes** 
-
-* none
-
 ### **Features**
 
 * `focus` and `blur` outputs added to `DynamicFormControlComponent` for event bindings (closes [#130](https://github.com/udos86/ng2-dynamic-forms/issues/130)) 
@@ -113,10 +470,6 @@
 
 
 # 1.0.3
-
-### **Breaking Changes** 
-
-* none 
 
 ### **Bugfixes** 
 
@@ -128,7 +481,6 @@
 * JSON export for `Validators` added (closes [#128](https://github.com/udos86/ng2-dynamic-forms/issues/128)) 
 
 
-
 # 1.0.2
 
 ### **Breaking Changes** 
@@ -136,24 +488,12 @@
 * **!!! IMPORTANT !!!** `[(ngModel)]` bindings have been completely removed. If you need to update the `value` of any `DynamicFormControlModel` 
 at runtime use `valueUpdates` `Rx.Subject` [(see README.md)](https://github.com/udos86/ng2-dynamic-forms#model-bindings-and-control-references) 
 
-### **Bugfixes** 
-
-* none
-
 ### **Features**
 
 * proper JSON export of all `DynamicFormControlModel`s (closes [#125](https://github.com/udos86/ng2-dynamic-forms/issues/125))_ 
 
 
 # 1.0.1
-
-### **Breaking Changes** 
-
-* none
-
-### **Bugfixes** 
-
-* none
 
 ### **Features**
 
@@ -164,17 +504,9 @@ at runtime use `valueUpdates` `Rx.Subject` [(see README.md)](https://github.com/
 
 # 1.0.0
 
-### **Breaking Changes** 
-
-* none
-
 ### **Bugfixes** 
 
 * Webpack flaws fixed (closes [#118](https://github.com/udos86/ng2-dynamic-forms/issues/118)) 
-
-### **Features**
-
-* none
 
 
 # RC.3
@@ -193,14 +525,6 @@ at runtime use `valueUpdates` `Rx.Subject` [(see README.md)](https://github.com/
 
 
 # RC.2
-
-### **Breaking Changes** 
-
-* none
-
-### **Bugfixes** 
-
-* none
 
 ### **Features**
 
@@ -225,14 +549,6 @@ at runtime use `valueUpdates` `Rx.Subject` [(see README.md)](https://github.com/
 
 # beta.17
 
-### **Breaking Changes** 
-
-* none
-
-### **Bugfixes** 
-
-* none
-
 ### **Features**
  
 * Migration to Angular 2.0 final (closes [#100](https://github.com/udos86/ng2-dynamic-forms/issues/100)) 
@@ -241,24 +557,12 @@ at runtime use `valueUpdates` `Rx.Subject` [(see README.md)](https://github.com/
 
 # beta.16
 
-### **Breaking Changes** 
-
-* none
-
-### **Bugfixes** 
-
-* none
-
 ### **Features**
  
 * UMD bundles added (see `README.md`)
 
 
 # beta.15
-
-### **Major Breaking Changes** 
-
-* none
 
 ### **Bugfixes** 
 
@@ -271,16 +575,12 @@ at runtime use `valueUpdates` `Rx.Subject` [(see README.md)](https://github.com/
 
 # beta.14
 
-### **Major Breaking Changes** 
+### **Breaking Changes** 
 
 * **!!! IMPORTANT !!!** `DynamicFormsCoreModule` now needs to be imported in app root `NgModule` via `forRoot()`
 * **!!! IMPORTANT !!!** `disabled` property bindings were removed! Use `disable()`and `enable()` functions of `DynamicFormControlComponent` instead
 (see *Known Issues* for explanation)
 * `help` property of `DynamicFormControlModel` renamed to `hint`
-
-### **Bugfixes** 
-
-* none
 
 ### **Features**
  
@@ -301,10 +601,6 @@ This is due to a [**bug**](https://github.com/angular/material2/issues/1171) in 
 
 # beta.13
 
-### **Major Breaking Changes** 
-
-* none
-
 ### **Bugfixes** 
 
 * `FormGroup` validator extras now set correctly (closes [#79](https://github.com/udos86/ng2-dynamic-forms/issues/79))  
@@ -317,36 +613,25 @@ This is due to a [**bug**](https://github.com/angular/material2/issues/1171) in 
 
 # beta.12
 
-### **Major Breaking Changes** 
+### **Breaking Changes** 
 
 * property `validatorsAsync` of `DynamicFormValueControlModel`renamed to `asyncValidators`
-
-### **Minor Breaking Changes** 
-
-* none
 
 ### **Features**
  
 * support for `FormGroup` and `FormArray` validator functions added (closes [#79](https://github.com/udos86/ng2-dynamic-forms/issues/79))
 * `ui-primeng` now working with `NgModule`
 
+
 # beta.11
 
-### **Major Breaking Changes** 
-
-* none
-
-### **Minor Breaking Changes** 
+### **Breaking Changes** 
 
 * `required` attribute (temporarily) removed from templates due to [**issues**](https://github.com/angular/angular/issues/5976) 
 still not being resolved in Angular 2
 
 
 # beta.10
-
-### **Major Breaking Changes** 
-
-* none
 
 ### **Bugfixes** 
 
@@ -356,25 +641,13 @@ still not being resolved in Angular 2
 
 # beta.9
 
-### **Major Breaking Changes** 
+### **Breaking Changes** 
 
 * **!!! IMPORTANT !!!** ng2 DynamicForms now supports **`NgModule`** 
---> **Please read updated `README.md**
-
-### **Minor Breaking Changes** 
-
-* none
+--> **Please read updated** `README.md
 
 
 # beta.8
-
-### **Major Breaking Changes** 
-
-* none
-
-### **Minor Breaking Changes** 
-
-* none
 
 ### **Bugfixes**
 
@@ -383,15 +656,10 @@ still not being resolved in Angular 2
 
 # beta.7
 
-### **Major Breaking Changes** 
+### **Breaking Changes** 
 
 * **!!! IMPORTANT !!!** `DynamicFormModel` **has been completely removed** --> use a simple `Array<DynamicFormControlModel>` instead
 * **!!! IMPORTANT !!!** `findById()` function of `DynamicFormModel` **has been moved to** `DynamicFormService`
-
-
-### **Minor Breaking Changes** 
-
-* none
 
 ### **Bugfixes**
 
@@ -400,15 +668,10 @@ still not being resolved in Angular 2
 
 # beta.6
 
-### **Major Breaking Changes** 
-
-* none
-
-### **Minor Breaking Changes** 
+### **Breaking Changes** 
 
 * `DynamicFormControlModel` renamed to `DynamicFormValueControlModel`
 * `DynamicFormAbstractControlModel` renamed to `DynamicFormControlModel`
-
 
 ### **Features**
 

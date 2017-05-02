@@ -1,5 +1,5 @@
 * {
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 100%;
     margin: 0;
     padding: 0;
@@ -11,6 +11,20 @@ nav {
 
 nav a {
     padding: 1rem;
+}
+
+pre {
+    display: block;
+    padding: 10px;
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.42857143;
+    color: #333;
+    word-break: break-all;
+    word-wrap: break-word;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .content-padding {
@@ -75,6 +89,10 @@ nav a {
     text-align: center;
 }
 
+kendo-calendar {
+    margin: 0 auto;
+}
+
 md-input {
     vertical-align: middle;
 }
@@ -100,15 +118,35 @@ form:nth-of-type(2) dynamic-form-basic-control dynamic-form-basic-control {
     margin: 0.8rem 0;
 }
 
-fieldset:not(:last-of-type) .btn-success, fieldset:not(:last-of-type) .button.success {
+.form-array fieldset:not(:last-of-type) .btn-success,
+.form-array fieldset:not(:last-of-type) .button.success,
+.form-array fieldset:first-of-type .btn-default:nth-of-type(2),
+.form-array fieldset:last-of-type .btn-default:nth-of-type(3),
+.form-array fieldset:first-of-type .button.primary:nth-of-type(2),
+.form-array fieldset:last-of-type .button.primary:nth-of-type(3),
+.form-array fieldset:only-of-type .btn-danger,
+.form-array fieldset:only-of-type .button.alert {
     display: none;
-}
-
-fieldset:only-of-type .btn-danger, fieldset:only-of-type .button.alert {
-    /*display: none;*/
 }
 
 dynamic-form-material-example fieldset {
     border: none;
-    display: inline-block;
+}
+
+dynamic-form-material-example fieldset {
+    border: none;
+}
+
+dynamic-form-kendo-control {
+    display: block;
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+dynamic-form-kendo-control .k-widget {
+    margin: 0 auto;
+}
+
+dynamic-form-material-control .md-list-item {
+    justify-content: center;
 }

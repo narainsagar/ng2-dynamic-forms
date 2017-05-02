@@ -1,55 +1,50 @@
-var dateFormat = require("dateformat"),
+let dateFormat = require("dateformat"),
     fs = require("fs"),
     path = require("path"),
-    rollup = require("rollup").rollup,
+    gulp = require("gulp"),
+    gulpRollup = require('gulp-better-rollup'),
     uglify = require("rollup-plugin-uglify"),
-    license = fs.readFileSync("./LICENSE", "utf8"),
-    now = Date.now();
+    merge = require('merge-stream'),
+    license = fs.readFileSync("./LICENSE", "utf8");
 
-module.exports = function (modules, entryRootPath, libraryName, globalsName, pkg, dest) {
+module.exports = function (entryRootPath, moduleName, globalsName, pkg, dest) {
+
+    function camelCase(string) {
+        return string.replace(/-(\w)/g, (_, letter) => letter.toUpperCase());
+    }
 
     return function () {
 
-        function camelCase(string) {
-            return string.replace(/-(\w)/g, (_, letter) => letter.toUpperCase());
+        function getOptions(minify) {
+
+            return {
+
+                context: "this",
+                external: Object.keys(globals),
+                plugins: minify ? [
+                        uglify({
+                            output: {
+                                comments: (node, comment) => comment.value.startsWith("!")
+                            }
+                        })
+                    ] : []
+            };
         }
 
-        function bundle(moduleName, minify) {
+        function getGenerateOptions(minify) {
 
-            return rollup({
+            return {
 
-                context: "window",
-                entry: path.join(entryRootPath, moduleName, "index.js"),
-                external: [...Object.keys(globals)],
-                plugins: minify ? [uglify({
-                    output: {
-                        comments: (node, comment) => comment.value.startsWith("!")
-                    }
-                })] : []
-
-            }).then(bundle => {
-
-                var result = bundle.generate({
-
-                    banner: "/*!\n" + pkg.name + " " + pkg.version + " " + dateFormat(now, "UTC:yyyy-mm-dd HH:MM")
-                    + " UTC\n" + license + "\n*/",
-                    format: "umd",
-                    globals: globals,
-                    moduleName: `${globalsName}.${camelCase(moduleName)}`
-                });
-
-                var pathBundle = path.join(dest, moduleName, "bundles");
-
-                if (!fs.existsSync(pathBundle)) {
-                    fs.mkdirSync(pathBundle);
-                }
-
-                fs.writeFileSync(path.join(pathBundle,
-                    minify ? `${moduleName}.umd.min.js` : `${moduleName}.umd.js`), result.code);
-            });
+                moduleId: "",
+                moduleName: `${globalsName}.${camelCase(moduleName)}`,
+                format: "umd",
+                globals,
+                banner: `/*!\n${pkg.name} ${pkg.version} ${dateFormat(Date.now(), "UTC:yyyy-mm-dd HH:MM")} UTC\n${license}\n*/`,
+                dest: minify ? `${moduleName}.umd.min.js` : `${moduleName}.umd.js`
+            };
         }
 
-        var globals = {
+        const globals = {
 
             "@angular/common": "ng.common",
             "@angular/core": "ng.core",
@@ -59,27 +54,32 @@ module.exports = function (modules, entryRootPath, libraryName, globalsName, pkg
             "@angular/platform-browser": "ng.platformBrowser",
             "@angular/platform-browser-dynamic": "ng.platformBrowserDynamic",
             "@angular/router": "ng.router",
+            "@ng-bootstrap/ng-bootstrap": "@ng-bootstrap/ng-bootstrap",
             "@ng2-dynamic-forms/core": "ng2DF.core",
+            "@progress/kendo-angular-dateinputs": "progress/kendo-angular-dateinputs", // TODO
             "@progress/kendo-angular-dropdowns": "progress/kendo-angular-dropdowns", // TODO
             "@progress/kendo-angular-inputs": "progress/kendo-angular-inputs", // TODO
-            "primeng/components/checkbox/checkbox": "primeng/components/checkbox/checkbox",
-            "primeng/components/dropdown/dropdown": "primeng/components/dropdown/dropdown",
-            "primeng/components/inputtext/inputtext": "primeng/components/inputtext/inputtext",
-            "primeng/components/inputtextarea/inputtextarea": "primeng/components/inputtextarea/inputtextarea",
-            "primeng/components/radiobutton/radiobutton": "primeng/components/radiobutton/radiobutton",
-            "primeng/components/spinner/spinner": "primeng/components/spinner/spinner",
+            "@progress/kendo-angular-upload": "progress/kendo-angular-upload", // TODO
+            "ionic-angular": "ionic-angular",
+            "ng-semantic": "ng-semantic", // TODO
+            "primeng/primeng": "primeng/primeng",
             "rxjs/Subject": "Rx",
             "rxjs/Subscription": "Rx"
         };
 
-        modules.forEach(moduleName => {
-            globals[`${libraryName}/${moduleName}`] = `${globalsName}.${camelCase(moduleName)}`;
-        });
+        const srcPath = path.join(entryRootPath, moduleName, "index.js");
 
-        return modules.reduce((previous, moduleName) => {
+        const destPath = path.join(dest, moduleName, "bundles");
 
-            return previous.then(() => Promise.all([bundle(moduleName, false), bundle(moduleName, true)]));
+        const bundle = gulp.src(srcPath)
+                           .pipe(gulpRollup(getOptions(false), getGenerateOptions(false)))
+                           .pipe(gulp.dest(destPath));
 
-        }, Promise.resolve());
+
+        const bundleMinified = gulp.src(srcPath)
+                                   .pipe(gulpRollup(getOptions(true), getGenerateOptions(true)))
+                                   .pipe(gulp.dest(destPath));
+
+        return merge(bundle, bundleMinified);
     }
 };

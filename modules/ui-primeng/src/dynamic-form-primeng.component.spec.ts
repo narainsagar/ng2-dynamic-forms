@@ -1,21 +1,40 @@
-import {Type} from "@angular/core";
-import {TestBed, async, inject, ComponentFixture} from "@angular/core/testing";
-import {ReactiveFormsModule, FormGroup, FormControl} from "@angular/forms";
-import {DynamicFormsCoreModule, DynamicFormService, DynamicInputModel, DynamicFormControlModel} from "@ng2-dynamic-forms/core";
-import {CheckboxModule} from "primeng/components/checkbox/checkbox";
-import {DropdownModule} from "primeng/components/dropdown/dropdown";
-import {InputTextModule} from "primeng/components/inputtext/inputtext";
-import {InputTextareaModule} from "primeng/components/inputtextarea/inputtextarea";
-import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
-import {SpinnerModule} from "primeng/components/spinner/spinner";
-import {DynamicFormPrimeNGComponent, DYNAMIC_FORM_UI_PRIME_NG} from "./dynamic-form-primeng.component";
+import { Type, DebugElement } from "@angular/core";
+import { TestBed, async, inject, ComponentFixture } from "@angular/core/testing";
+import { ReactiveFormsModule, FormGroup, FormControl } from "@angular/forms";
+import { By } from "@angular/platform-browser";
+import {
+    DynamicFormsCoreModule,
+    DynamicFormService,
+    DynamicInputModel,
+    DynamicFormControlModel
+} from "@ng2-dynamic-forms/core";
+import {
+    AutoCompleteModule,
+    CalendarModule,
+    CheckboxModule,
+    ChipsModule,
+    DropdownModule,
+    EditorModule,
+    InputSwitchModule,
+    InputTextModule,
+    InputTextareaModule,
+    MultiSelectModule,
+    RadioButtonModule,
+    SliderModule,
+    SpinnerModule
+} from "primeng/primeng";
+import { DynamicFormPrimeNGComponent } from "./dynamic-form-primeng.component";
+import { PFormControlType } from "./dynamic-form-primeng.const";
 
 describe("DynamicFormPrimeNGComponent test suite", () => {
 
-    let formModel = [new DynamicInputModel({id: "test"})],
+    let inputModel = new DynamicInputModel({id: "test"}),
+        formModel = [inputModel],
         formGroup: FormGroup,
         fixture: ComponentFixture<DynamicFormPrimeNGComponent>,
-        component: DynamicFormPrimeNGComponent;
+        component: DynamicFormPrimeNGComponent,
+        debugElement: DebugElement,
+        inputElement: DebugElement;
 
     beforeEach(async(() => {
 
@@ -24,11 +43,18 @@ describe("DynamicFormPrimeNGComponent test suite", () => {
             imports: [
                 ReactiveFormsModule,
                 DynamicFormsCoreModule.forRoot(),
+                AutoCompleteModule,
+                CalendarModule,
                 CheckboxModule,
+                ChipsModule,
                 DropdownModule,
+                EditorModule,
+                InputSwitchModule,
                 InputTextModule,
                 InputTextareaModule,
+                MultiSelectModule,
                 RadioButtonModule,
+                SliderModule,
                 SpinnerModule
             ],
             declarations: [DynamicFormPrimeNGComponent]
@@ -36,28 +62,28 @@ describe("DynamicFormPrimeNGComponent test suite", () => {
         }).compileComponents().then(() => {
 
             fixture = TestBed.createComponent(DynamicFormPrimeNGComponent as Type<DynamicFormPrimeNGComponent>);
-            component = fixture.componentInstance;
-        });
 
+            component = fixture.componentInstance;
+            debugElement = fixture.debugElement;
+        });
     }));
 
-    beforeEach(inject([DynamicFormService], service => {
+    beforeEach(inject([DynamicFormService], (service: DynamicFormService) => {
 
         formGroup = service.createFormGroup(formModel);
 
-        component.controlGroup = formGroup;
+        component.group = formGroup;
         component.model = formModel[0];
 
         fixture.detectChanges();
+
+        inputElement = debugElement.query(By.css(`input[id='${formModel[0].id}']`));
     }));
 
-
-    it("tests if component initializes correctly", () => {
-
-        expect(component.type).toEqual(DYNAMIC_FORM_UI_PRIME_NG);
+    it("should initialize correctly", () => {
 
         expect(component.control instanceof FormControl).toBe(true);
-        expect(component.controlGroup instanceof FormGroup).toBe(true);
+        expect(component.group instanceof FormGroup).toBe(true);
         expect(component.model instanceof DynamicFormControlModel).toBe(true);
         expect(component.hasErrorMessaging).toBe(false);
 
@@ -69,14 +95,69 @@ describe("DynamicFormPrimeNGComponent test suite", () => {
         expect(component.change).toBeDefined();
         expect(component.focus).toBeDefined();
 
-        expect(component.onBlur).toBeDefined();
-        expect(component.onChange).toBeDefined();
-        expect(component.onFocus).toBeDefined();
+        expect(component.onValueChange).toBeDefined();
+        expect(component.onFocusChange).toBeDefined();
 
-        expect(component.isCheckbox).toBe(false);
-        expect(component.isCheckboxGroup).toBe(false);
-        expect(component.isRadioGroup).toBe(false);
         expect(component.isValid).toBe(true);
         expect(component.isInvalid).toBe(false);
+
+        expect(component.type).toBe(PFormControlType.Input);
+    });
+
+    it("should have an input element", () => {
+
+        expect(inputElement instanceof DebugElement).toBe(true);
+    });
+
+    it("should listen to native focus and blur events", () => {
+
+        spyOn(component, "onFocusChange");
+
+        inputElement.triggerEventHandler("focus", null);
+        inputElement.triggerEventHandler("blur", null);
+
+        expect(component.onFocusChange).toHaveBeenCalledTimes(2);
+    });
+
+    it("should listen to native change event", () => {
+
+        spyOn(component, "onValueChange");
+
+        inputElement.triggerEventHandler("change", null);
+
+        expect(component.onValueChange).toHaveBeenCalled();
+    });
+
+    it("should update model value when control value changes", () => {
+
+        spyOn(component, "onControlValueChanges");
+
+        component.ngOnInit();
+
+        component.control.setValue("test");
+
+        expect(component.onControlValueChanges).toHaveBeenCalled();
+    });
+
+    it("should update control value when model value changes", () => {
+
+        spyOn(component, "onModelValueUpdates");
+
+        component.ngOnInit();
+
+        inputModel.valueUpdates.next("test");
+
+        expect(component.onModelValueUpdates).toHaveBeenCalled();
+    });
+
+    it("should update control activation when model disabled property changes", () => {
+
+        spyOn(component, "onModelDisabledUpdates");
+
+        component.ngOnInit();
+
+        inputModel.disabledUpdates.next(true);
+
+        expect(component.onModelDisabledUpdates).toHaveBeenCalled();
     });
 });

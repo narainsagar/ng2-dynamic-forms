@@ -1,42 +1,48 @@
-import {ValidatorFn, AsyncValidatorFn} from "@angular/forms";
-import {Subject} from "rxjs/Subject";
-import {DynamicFormControlModel, DynamicFormControlModelConfig, ClsConfig} from "./dynamic-form-control.model";
-import {serializable} from "../decorator/serializable.decorator";
-import {getValue, isDefined} from "../utils";
+import { Subject } from "rxjs/Subject";
+import {
+    DynamicFormControlModel,
+    DynamicFormControlModelConfig,
+    DynamicValidatorsMap,
+    ClsConfig
+} from "./dynamic-form-control.model";
+import { serializable } from "../decorator/serializable.decorator";
+import { isBoolean, isDefined } from "../utils";
 
-export interface DynamicFormValueControlModelConfig extends DynamicFormControlModelConfig {
+export type DynamicFormControlValue = boolean | number | string | Date | Array<boolean | number | string>;
 
-    asyncValidators?: Array<AsyncValidatorFn>;
-    errorMessages?: {[key: string]: string};
+export interface DynamicFormValueControlModelConfig<T> extends DynamicFormControlModelConfig {
+
+    asyncValidators?: DynamicValidatorsMap;
+    errorMessages?: DynamicValidatorsMap;
     hint?: string;
     required?: boolean;
     tabIndex?: number;
-    validators?: Array<ValidatorFn>;
-    value?: boolean | number | string;
+    validators?: DynamicValidatorsMap;
+    value?: T;
 }
 
 export abstract class DynamicFormValueControlModel<T> extends DynamicFormControlModel {
 
-    @serializable() asyncValidators: Array<AsyncValidatorFn>;
-    @serializable() errorMessages: {[key: string]: string} | null;
+    @serializable() asyncValidators: DynamicValidatorsMap | null;
+    @serializable() errorMessages: DynamicValidatorsMap | null;
     @serializable() hint: string | null;
     @serializable() required: boolean;
     @serializable() tabIndex: number | null;
-    @serializable() validators: Array<ValidatorFn>;
+    @serializable() validators: DynamicValidatorsMap | null;
     @serializable("value") _value: T | null;
     valueUpdates: Subject<T>;
 
-    constructor(config: DynamicFormValueControlModelConfig, cls?: ClsConfig) {
+    constructor(config: DynamicFormValueControlModelConfig<T>, cls?: ClsConfig) {
 
         super(config, cls);
 
-        this.asyncValidators = getValue(config, "asyncValidators", []);
-        this.errorMessages = getValue(config, "errorMessages", null);
-        this.hint = getValue(config, "hint", null);
-        this.required = getValue(config, "required", false);
-        this.tabIndex = getValue(config, "tabIndex", null);
-        this.validators = getValue(config, "validators", []);
-        this._value = getValue(config, "value", null);
+        this.asyncValidators = config.asyncValidators || null;
+        this.errorMessages = config.errorMessages || null;
+        this.hint = config.hint || null;
+        this.required = isBoolean(config.required) ? config.required : false;
+        this.tabIndex = config.tabIndex || null;
+        this.validators = config.validators || null;
+        this._value = config.value || null;
 
         this.valueUpdates = new Subject<T>();
         this.valueUpdates.subscribe((value: T) => this.value = value);

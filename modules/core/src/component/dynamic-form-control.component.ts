@@ -1,87 +1,137 @@
-import {EventEmitter, TemplateRef, OnInit, OnDestroy} from "@angular/core";
-import {FormControl, FormGroup} from "@angular/forms";
-import {Subscription} from "rxjs/Subscription";
-import {DynamicFormControlModel} from "../model/dynamic-form-control.model";
-import {DynamicFormValueControlModel} from "../model/dynamic-form-value-control.model";
-import {DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX} from "../model/checkbox/dynamic-checkbox.model";
-import {DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX_GROUP} from "../model/checkbox/dynamic-checkbox-group.model";
-import {DYNAMIC_FORM_CONTROL_TYPE_RADIO_GROUP} from "../model/radio/dynamic-radio-group.model";
-import {DYNAMIC_FORM_CONTROL_TYPE_SWITCH} from "../model/switch/dynamic-switch.model";
+import { EventEmitter, OnInit, AfterViewInit, OnDestroy, QueryList, TemplateRef } from "@angular/core";
+import { FormControl, FormGroup } from "@angular/forms";
+import { Subscription } from "rxjs/Subscription";
+import { DynamicFormControlModel } from "../model/dynamic-form-control.model";
+import { DynamicFormValueControlModel, DynamicFormControlValue } from "../model/dynamic-form-value-control.model";
+import { DynamicFormControlRelationGroup } from "../model/dynamic-form-control-relation.model";
+import { DYNAMIC_FORM_CONTROL_TYPE_ARRAY } from "../model/form-array/dynamic-form-array.model";
+import { DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX } from "../model/checkbox/dynamic-checkbox.model";
+import { DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX_GROUP } from "../model/checkbox/dynamic-checkbox-group.model";
+import { DYNAMIC_FORM_CONTROL_TYPE_GROUP } from "../model/form-group/dynamic-form-group.model";
 import {
     DynamicInputModel,
     DYNAMIC_FORM_CONTROL_TYPE_INPUT,
     DYNAMIC_FORM_CONTROL_INPUT_TYPE_FILE
 } from "../model/input/dynamic-input.model";
-import {findIds, findActivationRelation, toBeDisabled} from "../model/dynamic-form-control-relation.model";
-import {isDefined} from "../utils";
+import { DYNAMIC_FORM_CONTROL_TYPE_RADIO_GROUP } from "../model/radio/dynamic-radio-group.model";
+import { DYNAMIC_FORM_CONTROL_TYPE_SELECT } from "../model/select/dynamic-select.model";
+import { DYNAMIC_FORM_CONTROL_TYPE_SWITCH } from "../model/switch/dynamic-switch.model";
+import { DYNAMIC_FORM_CONTROL_TYPE_TEXTAREA } from "../model/textarea/dynamic-textarea.model";
+import { DynamicFormRelationService } from "../service/dynamic-form-relation.service";
+import {
+    DynamicTemplateDirective,
+    DYNAMIC_TEMPLATE_DIRECTIVE_ALIGN_END,
+    DYNAMIC_TEMPLATE_DIRECTIVE_ALIGN_START
+} from "../directive/dynamic-template.directive";
+import { isDefined } from "../utils";
 
-export abstract class DynamicFormControlComponent implements OnInit, OnDestroy {
+export interface DynamicFormControlEvent {
+
+    $event: Event | FocusEvent | DynamicFormControlEvent | any;
+    control: FormControl;
+    model: DynamicFormControlModel;
+}
+
+export const enum CoreFormControlType {
+
+    Array = 1,
+    Checkbox = 2,
+    Group = 3,
+    Input = 4,
+    RadioGroup = 5,
+    Select = 6,
+    Switch = 7,
+    TextArea = 8
+}
+
+export abstract class DynamicFormControlComponent implements OnInit, AfterViewInit, OnDestroy {
 
     bindId: boolean;
-    blur: EventEmitter<FocusEvent>;
-    change: EventEmitter<Event>;
+    blur: EventEmitter<DynamicFormControlEvent>;
+    change: EventEmitter<DynamicFormControlEvent>;
     control: FormControl;
-    controlGroup: FormGroup;
-    customTemplate: TemplateRef<any>;
-    focus: EventEmitter<FocusEvent>;
+    controlGroup: FormGroup; // deprecated
+    focus: EventEmitter<DynamicFormControlEvent>;
+    group: FormGroup;
     hasErrorMessaging: boolean = false;
     hasFocus: boolean;
     model: DynamicFormControlModel;
-    nestedTemplate: TemplateRef<any>;
+    nestedTemplates: QueryList<DynamicTemplateDirective>;
+    template: TemplateRef<any>;
+    templateDirective: DynamicTemplateDirective;
+    templates: QueryList<DynamicTemplateDirective>;
+    type: number | null;
 
-    private subscriptions: Array<Subscription> = [];
+    private subscriptions: Subscription[] = [];
 
-    abstract readonly type: string;
+    constructor(private relationService: DynamicFormRelationService) {}
 
-    constructor() {
-    }
+    ngOnInit(): void {
 
-    ngOnInit() {
-
-        if (!isDefined(this.model)) {
-            throw new Error(`no model input defined for DynamicFormControlComponent`);
+        if (!isDefined(this.model) || !isDefined(this.group)) {
+            throw new Error(`no [model] or [group] input binding defined for DynamicFormControlComponent`);
         }
 
-        if (!isDefined(this.controlGroup)) {
-            throw new Error(`no controlGroup input defined for DynamicFormControlComponent`);
-        }
-
-        this.control = <FormControl> this.controlGroup.get(this.model.id);
+        this.control = this.group.get(this.model.id) as FormControl;
+        this.type = this.getFormControlType();
 
         this.subscriptions.push(this.control.valueChanges.subscribe(this.onControlValueChanges.bind(this)));
         this.subscriptions.push(this.model.disabledUpdates.subscribe(this.onModelDisabledUpdates.bind(this)));
 
         if (this.model instanceof DynamicFormValueControlModel) {
 
-            let model = <DynamicFormValueControlModel<any>> this.model;
+            let model = this.model as DynamicFormValueControlModel<DynamicFormControlValue>;
 
             this.subscriptions.push(model.valueUpdates.subscribe(this.onModelValueUpdates.bind(this)));
         }
 
-        this.registerControlRelations();
+        if (this.model.relation.length > 0) {
+            this.setControlRelations();
+        }
     }
 
-    ngOnDestroy() {
+    ngAfterViewInit(): void {
+        setTimeout(() => this.setTemplates(), 0); // setTimeout to trigger change detection
+    }
+
+    ngOnDestroy(): void {
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    get errorMessages(): Array<string> {
+    get errorMessages(): string[] {
 
-        let messages = [];
+        let model = this.model as DynamicFormValueControlModel<DynamicFormControlValue>,
+            messages = [];
 
-        if (isDefined(this.model["errorMessages"])) {
+        if (isDefined(model.errorMessages)) {
 
             for (let validatorName in this.control.errors) {
 
-                let message: string;
+                let message;
 
-                if (this.model["errorMessages"][validatorName]) {
+                if (validatorName === "minlength" || validatorName === "maxlength") {
+                    validatorName = validatorName.replace("length", "Length");
+                }
 
-                    message = this.model["errorMessages"][validatorName].replace(/\{\{(.+?)\}\}/mg,
-                        (match, propertyName) => this.model[propertyName] ? this.model[propertyName] : null);
+                if (model.errorMessages[validatorName]) {
+
+                    message = model.errorMessages[validatorName]
+                        .replace(/\{\{(.+?)\}\}/mg, (match: string, expression: string) => {
+
+                            let propertySource: any = model,
+                                propertyName: string = expression;
+
+                            if (expression.indexOf("validator.") >= 0) {
+
+                                propertySource = this.control.errors[validatorName];
+                                propertyName = expression.replace("validator.", "");
+                            }
+
+                            return propertySource[propertyName] ? propertySource[propertyName] : null;
+                        });
 
                 } else {
-                    message = `Validation "${validatorName}" failed`;
+                    message = `Error on "${validatorName}" validation`;
                 }
 
                 messages.push(message);
@@ -91,20 +141,24 @@ export abstract class DynamicFormControlComponent implements OnInit, OnDestroy {
         return messages;
     }
 
-    get isCheckbox(): boolean {
-        return this.model.type === DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX;
+    get hasHint(): boolean { // needed for AOT
+        return (this.model as DynamicInputModel).hint !== null;
     }
 
-    get isCheckboxGroup(): boolean {
-        return this.model.type === DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX_GROUP;
+    get hasList(): boolean { // needed for AOT
+        return (this.model as DynamicInputModel).list !== null;
     }
 
-    get isRadioGroup(): boolean {
-        return this.model.type === DYNAMIC_FORM_CONTROL_TYPE_RADIO_GROUP;
+    get hasEndTemplate(): boolean {
+        return !!this.template && this.templateDirective.align === DYNAMIC_TEMPLATE_DIRECTIVE_ALIGN_END;
     }
 
-    get isSwitch(): boolean {
-        return this.model.type === DYNAMIC_FORM_CONTROL_TYPE_SWITCH;
+    get hasStartTemplate(): boolean {
+        return !!this.template && this.templateDirective.align === DYNAMIC_TEMPLATE_DIRECTIVE_ALIGN_START;
+    }
+
+    get showErrorMessages(): boolean {
+        return this.control.touched && !this.hasFocus && this.isInvalid;
     }
 
     get isValid(): boolean {
@@ -115,94 +169,167 @@ export abstract class DynamicFormControlComponent implements OnInit, OnDestroy {
         return this.control.touched && this.control.invalid;
     }
 
-    registerControlRelations(): void {
+    get templateDirectives(): QueryList<DynamicTemplateDirective> {
+        return this.nestedTemplates ? this.nestedTemplates : this.templates;
+    }
 
-        if (this.model.relation.length > 0 && findActivationRelation(this.model.relation)) {
+    protected getFormControlType(): number | null {
 
-            this.setControlActivationState();
+        switch (this.model.type) {
 
-            findIds(this.model.relation).forEach(controlId => {
+            case DYNAMIC_FORM_CONTROL_TYPE_ARRAY:
+                return CoreFormControlType.Array;
 
-                if (this.model.id === controlId) {
-                    throw new Error(`FormControl ${this.model.id} cannot depend on itself`);
-                }
+            case DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX:
+                return CoreFormControlType.Checkbox;
 
-                let control: FormControl = <FormControl> this.controlGroup.get(controlId);
+            case DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX_GROUP:
+            case DYNAMIC_FORM_CONTROL_TYPE_GROUP:
+                return CoreFormControlType.Group;
 
-                if (control) {
+            case DYNAMIC_FORM_CONTROL_TYPE_INPUT:
+                return CoreFormControlType.Input;
 
-                    this.subscriptions.push(control.valueChanges.subscribe(
-                        value => this.setControlActivationState())
-                    );
+            case DYNAMIC_FORM_CONTROL_TYPE_RADIO_GROUP:
+                return CoreFormControlType.RadioGroup;
 
-                    this.subscriptions.push(control.statusChanges.subscribe(
-                        status => this.setControlActivationState())
-                    );
-                }
+            case DYNAMIC_FORM_CONTROL_TYPE_SELECT:
+                return CoreFormControlType.Select;
+
+            case DYNAMIC_FORM_CONTROL_TYPE_SWITCH:
+                return CoreFormControlType.Switch;
+
+            case DYNAMIC_FORM_CONTROL_TYPE_TEXTAREA:
+                return CoreFormControlType.TextArea;
+
+            default:
+                return null;
+        }
+    }
+
+    protected setTemplates(): void {
+
+        this.templateDirectives.forEach((directive: DynamicTemplateDirective) => {
+
+            if (directive.type !== null) {
+                return; // templates with type property need to be processed by concrete UI component
+            }
+
+            if (directive.modelType === this.model.type || directive.modelId === this.model.id) {
+
+                this.templateDirective = directive;
+                this.template = directive.templateRef;
+            }
+        });
+    }
+
+    protected setControlRelations(): void {
+
+        let relActivation = this.relationService.findActivationRelation(this.model.relation);
+
+        if (relActivation) {
+
+            this.updateModelDisabled(relActivation);
+
+            this.relationService.getRelatedFormControls(this.model, this.group).forEach(control => {
+
+                this.subscriptions.push(control.valueChanges.subscribe(() => this.updateModelDisabled(relActivation)));
+                this.subscriptions.push(control.statusChanges.subscribe(() => this.updateModelDisabled(relActivation)));
             });
         }
     }
 
-    setControlActivationState(): void {
+    updateModelDisabled(relation: DynamicFormControlRelationGroup): void {
 
-        this.model.disabledUpdates.next(
-            toBeDisabled(findActivationRelation(this.model.relation), this.controlGroup)
-        );
+        this.model.disabledUpdates.next(this.relationService.isFormControlToBeDisabled(relation, this.group));
     }
 
-    onControlValueChanges(value: any) {
+    onControlValueChanges(value: DynamicFormControlValue): void {
 
         if (this.model instanceof DynamicFormValueControlModel) {
-            (<DynamicFormValueControlModel<any>> this.model).value = value;
+
+            let model = this.model as DynamicFormValueControlModel<DynamicFormControlValue>;
+
+            if (model.value !== value) {
+                model.valueUpdates.next(value);
+            }
         }
-        //@exclude
-        console.log(this.model.id + " field changed to: ", value, typeof value, this.control.valid, this.model);
-        //@endexclude
     }
 
-    onModelDisabledUpdates(value: boolean) {
+    onModelValueUpdates(value: DynamicFormControlValue): void {
+
+        if (this.control.value !== value) {
+            this.control.setValue(value);
+        }
+    }
+
+    onModelDisabledUpdates(value: boolean): void {
         value ? this.control.disable() : this.control.enable();
     }
 
-    onModelValueUpdates(value: any) {
-        this.control.setValue(value);
+    onValueChange($event: Event | DynamicFormControlEvent | any): void {
+
+        if ($event instanceof Event) { // native HTML5 change event
+
+            $event.stopPropagation();
+
+            if (this.model.type === DYNAMIC_FORM_CONTROL_TYPE_INPUT) {
+
+                let model = this.model as DynamicInputModel;
+
+                if (model.inputType === DYNAMIC_FORM_CONTROL_INPUT_TYPE_FILE) {
+
+                    let inputElement: any = ($event as Event).target || ($event as Event).srcElement;
+
+                    model.files = inputElement.files as FileList;
+                }
+            }
+
+            this.change.emit({$event: $event as Event, control: this.control, model: this.model});
+
+        } else if ($event.hasOwnProperty("$event") && $event.hasOwnProperty("control") && $event.hasOwnProperty("model")) {
+
+            this.change.emit($event as DynamicFormControlEvent);
+
+        } else {
+
+            this.change.emit({$event: $event, control: this.control, model: this.model});
+        }
     }
 
-    onBlur($event: FocusEvent) {
+    onFocusChange($event: FocusEvent | DynamicFormControlEvent): void {
 
-        this.blur.emit($event);
-        this.hasFocus = false;
+        let emitValue;
 
-        //@exclude
-        console.log($event, this.model.id + " field is blurred");
-        //@endexclude
-    }
+        if ($event instanceof FocusEvent) {
 
-    onChange($event: Event) {
+            $event.stopPropagation();
 
-        this.change.emit($event);
+            emitValue = {$event: $event, control: this.control, model: this.model};
 
-        if (this.model.type === DYNAMIC_FORM_CONTROL_TYPE_INPUT) {
+            if ($event.type === "focus") {
 
-            let inputModel = <DynamicInputModel> this.model;
+                this.hasFocus = true;
+                this.focus.emit(emitValue);
 
-            if (inputModel.inputType === DYNAMIC_FORM_CONTROL_INPUT_TYPE_FILE) {
-                inputModel.files = $event.srcElement["files"];
+            } else {
+
+                this.hasFocus = false;
+                this.blur.emit(emitValue);
+            }
+
+        } else {
+
+            emitValue = $event as DynamicFormControlEvent;
+
+            if ((emitValue.$event as FocusEvent).type === "focus") {
+
+                this.focus.emit(emitValue);
+
+            } else {
+
+                this.blur.emit(emitValue);
             }
         }
-
-        //@exclude
-        console.log($event, this.model.id + " field is changed", $event);
-        //@endexclude
-    }
-
-    onFocus($event: FocusEvent) {
-
-        this.focus.emit($event);
-        this.hasFocus = true;
-
-        //@exclude
-        console.log($event, this.model.id + " field is focused");
-        //@endexclude
     }
 }

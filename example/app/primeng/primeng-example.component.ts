@@ -1,37 +1,41 @@
-import {Component, OnInit, ViewEncapsulation} from "@angular/core";
-import {FormGroup, FormControl} from "@angular/forms";
-import {DynamicFormService, DynamicCheckboxModel, DynamicFormControlModel} from "@ng2-dynamic-forms/core";
-import {PRIMENG_EXAMPLE_MODEL} from "./primeng-example.model";
+import { Component, OnInit, ViewEncapsulation } from "@angular/core";
+import { FormGroup, FormControl } from "@angular/forms";
+import { DynamicFormService, DynamicCheckboxModel, DynamicFormControlModel } from "@ng2-dynamic-forms/core";
+import { PRIMENG_EXAMPLE_MODEL } from "./primeng-example.model";
 
 @Component({
 
     moduleId: module.id,
     selector: "dynamic-form-primeng-example",
-    styleUrls: ["../../../node_modules/primeui/themes/omega/theme.css", "../../../node_modules/primeui/primeui-ng-all.min.css"],
+    styleUrls: [
+        "../../../node_modules/primeng/resources/themes/omega/theme.css",
+        "../../../node_modules/primeng/resources/primeng.min.css",
+        "../../../node_modules/quill/dist/quill.core.css",
+        "../../../node_modules/quill/dist/quill.snow.css",
+    ],
     templateUrl: "./primeng-example.component.html",
     encapsulation: ViewEncapsulation.None
 })
 
 export class PrimeNGExampleComponent implements OnInit {
 
-    dynamicFormModel: Array<DynamicFormControlModel>;
-    form: FormGroup;
+    formModel: DynamicFormControlModel[] = PRIMENG_EXAMPLE_MODEL;
+    formGroup: FormGroup;
 
-    exampleCheckboxControl: FormControl;
-    exampleCheckboxModel: DynamicCheckboxModel;
+    checkboxControl: FormControl;
+    checkboxModel: DynamicCheckboxModel;
 
-    constructor(private dynamicFormService: DynamicFormService) {
-
-        this.dynamicFormModel = PRIMENG_EXAMPLE_MODEL;
-    }
+    constructor(private formService: DynamicFormService) {}
 
     ngOnInit() {
 
-        this.form = this.dynamicFormService.createFormGroup(this.dynamicFormModel);
+        this.formGroup = this.formService.createFormGroup(this.formModel);
 
-        this.exampleCheckboxControl = <FormControl> this.form.controls["exampleCheckbox"]; // Type assertion for having updateValue method available
-        this.exampleCheckboxModel = <DynamicCheckboxModel> this.dynamicFormService.findById("exampleCheckbox", this.dynamicFormModel);
+        this.checkboxControl = this.formGroup.controls["exampleCheckbox"] as FormControl; // Type assertion for having updateValue method available
+        this.checkboxModel = this.formService.findById("exampleCheckbox", this.formModel) as DynamicCheckboxModel;
+    }
 
-        //this.exampleCheckboxControl.valueChanges.subscribe((value: string) => console.log("example checkbox field changed to: ", value, typeof value));
+    onChange($event) {
+        //console.log(`CHANGE event on ${$event.model.id}: `, $event);
     }
 }

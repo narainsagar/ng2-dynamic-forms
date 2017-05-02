@@ -1,7 +1,7 @@
-import {ClsConfig} from "./dynamic-form-control.model";
-import {DynamicFormValueControlModel, DynamicFormValueControlModelConfig} from "./dynamic-form-value-control.model";
-import {serializable} from "../decorator/serializable.decorator";
-import {getValue, serialize} from "../utils";
+import { ClsConfig } from "./dynamic-form-control.model";
+import { DynamicFormValueControlModel, DynamicFormValueControlModelConfig } from "./dynamic-form-value-control.model";
+import { serializable, serialize } from "../decorator/serializable.decorator";
+import { isBoolean } from "../utils";
 
 export interface DynamicFormOptionConfig<T> {
 
@@ -18,8 +18,8 @@ export class DynamicFormOption<T> {
 
     constructor(config: DynamicFormOptionConfig<T>) {
 
-        this.disabled = getValue(config, "disabled", false);
-        this.label = getValue(config, "label", null);
+        this.disabled = isBoolean(config.disabled) ? config.disabled : false;
+        this.label = config.label || null;
         this.value = config.value;
     }
 
@@ -36,14 +36,14 @@ export class DynamicFormOption<T> {
     }
 }
 
-export interface DynamicOptionControlModelConfig<T> extends DynamicFormValueControlModelConfig {
+export interface DynamicOptionControlModelConfig<T> extends DynamicFormValueControlModelConfig<T | T[]> {
 
-    options?: Array<DynamicFormOptionConfig<T>>;
+    options?: DynamicFormOptionConfig<T>[];
 }
 
-export abstract class DynamicOptionControlModel<T> extends DynamicFormValueControlModel<T> {
+export abstract class DynamicOptionControlModel<T> extends DynamicFormValueControlModel<T | T[]> {
 
-    @serializable() options: Array<DynamicFormOption<T>>;
+    @serializable() options: DynamicFormOption<T>[];
 
     constructor(config: DynamicOptionControlModelConfig<T>, cls?: ClsConfig) {
 
@@ -52,11 +52,26 @@ export abstract class DynamicOptionControlModel<T> extends DynamicFormValueContr
         this.options = config.options ? config.options.map(optionConfig => new DynamicFormOption<T>(optionConfig)) : [];
     }
 
+    add(optionConfig: DynamicFormOptionConfig<T>): DynamicFormOption<T> {
+        return this.insert(this.options.length, optionConfig);
+    }
+
     get(index: number): DynamicFormOption<T> {
         return this.options[index];
     }
 
-    select(index: number): void {
-        this.valueUpdates.next(this.options[index].value);
+    insert(index: number, optionConfig: DynamicFormOptionConfig<T>): DynamicFormOption<T> {
+
+        let option = new DynamicFormOption(optionConfig);
+
+        this.options.splice(index, 0, option);
+
+        return option;
     }
+
+    remove(...indices: number[]): void {
+        indices.forEach(index => this.options.splice(index, 1));
+    }
+
+    abstract select(...indices: number[]): void;
 }
