@@ -1,9 +1,11 @@
+const TRAVIS = process.env["TRAVIS"] !== undefined;
+
 module.exports = function (config) {
 
-    var reporters = ["progress", "coverage"],
+    let reporters = ["progress", "coverage"],
         coverageReporters = [{type: "text-summary"}];
 
-    if (process.env.TRAVIS) {
+    if (TRAVIS) {
 
         reporters.push("coveralls");
         coverageReporters.push({type: "lcov", dir: "coverage"});
@@ -29,6 +31,9 @@ module.exports = function (config) {
             "node_modules/hammerjs/hammer.min.js",
             "node_modules/systemjs/dist/system.src.js",
 
+            "node_modules/jquery/dist/jquery.min.js",
+            "node_modules/semantic-ui-css/semantic.min.js",
+
             "node_modules/zone.js/dist/zone.js",
             "node_modules/zone.js/dist/long-stack-trace-zone.js",
             "node_modules/zone.js/dist/proxy.js",
@@ -43,6 +48,13 @@ module.exports = function (config) {
             {pattern: "node_modules/@angular/**/*.js", included: false, watched: false},
             {pattern: "node_modules/@angular/**/*.js.map", included: false, watched: false},
 
+            {pattern: "node_modules/@ng-bootstrap/**/*.js", included: false, watched: false},
+
+            {pattern: "node_modules/@progress/**/*.js", included: false, watched: false},
+            {pattern: "node_modules/@telerik/**/*.js", included: false, watched: false},
+
+            {pattern: "node_modules/ionic-angular/**/*.js", included: false, watched: false},
+
             {pattern: "node_modules/primeng/**/*.js", included: false, watched: false},
             {pattern: "node_modules/primeng/**/*.js.map", included: false, watched: false},
 
@@ -56,12 +68,16 @@ module.exports = function (config) {
 
 
         // list of files to exclude
-        exclude: [],
+        exclude: TRAVIS ? [
+            "node_modules/@progress/**/*.js",
+            "node_modules/@telerik/**/*.js",
+            "@ng2-dynamic-forms/ui-kendo/**/*.*"
+        ] : [],
 
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-        preprocessors: {"@ng2-dynamic-forms/**/!(*.spec).js": ["coverage"]},
+        preprocessors: {"@ng2-dynamic-forms/*/src/**/!(*.spec).js": ["coverage"]},
 
 
         // test results reporter to use

@@ -1,14 +1,13 @@
-import {ClsConfig} from "../dynamic-form-control.model";
-import {DynamicOptionControlModel, DynamicOptionControlModelConfig} from "../dynamic-option-control.model";
-import {DynamicFieldSet} from "../form-group/dynamic-form-group.model";
-import {serializable} from "../../decorator/serializable.decorator";
-import {getValue} from "../../utils";
+import { ClsConfig } from "../dynamic-form-control.model";
+import { DynamicOptionControlModel, DynamicOptionControlModelConfig } from "../dynamic-option-control.model";
+import { DynamicFieldSet } from "../form-group/dynamic-form-group.model";
+import { serializable } from "../../decorator/serializable.decorator";
 
 export const DYNAMIC_FORM_CONTROL_TYPE_RADIO_GROUP = "RADIO_GROUP";
 
-export interface DynamicRadioGroupModelConfig extends DynamicOptionControlModelConfig {
+export interface DynamicRadioGroupModelConfig<T> extends DynamicOptionControlModelConfig<T> {
 
-    legend?: string | null;
+    legend?: string;
 }
 
 export class DynamicRadioGroupModel<T> extends DynamicOptionControlModel<T> implements DynamicFieldSet {
@@ -17,10 +16,14 @@ export class DynamicRadioGroupModel<T> extends DynamicOptionControlModel<T> impl
 
     @serializable() readonly type: string = DYNAMIC_FORM_CONTROL_TYPE_RADIO_GROUP;
 
-    constructor(config: DynamicRadioGroupModelConfig, cls?: ClsConfig) {
+    constructor(config: DynamicRadioGroupModelConfig<T>, cls?: ClsConfig) {
 
         super(config, cls);
 
-        this.legend = getValue(config, "legend", null);
+        this.legend = config.legend || null;
+    }
+
+    select(index: number): void {
+        this.valueUpdates.next(this.get(index).value);
     }
 }

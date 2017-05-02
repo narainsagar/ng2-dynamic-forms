@@ -1,10 +1,28 @@
-<div class="content-margin content-padding" style="width: 50%;">
+<div class="content-margin" style="width: 50%;">
 
-    <form [formGroup]="form">
+    <form [formGroup]="formGroup" class="k-form">
 
-        <dynamic-form-kendo-control *ngFor="let controlModel of dynamicFormModel"
-                                    [controlGroup]="form"
-                                    [model]="controlModel"></dynamic-form-kendo-control>
+        <dynamic-form-kendo-control *ngFor="let controlModel of formModel"
+                                    [group]="formGroup"
+                                    [model]="controlModel"
+                                    (change)="onChange($event)">
+
+            <ng-template modelId="kendoDropDownList" type="kendoDropDownListFooterTemplate">
+
+                <p>LIST FOOTER TEMPLATE</p>
+
+            </ng-template>
+
+            <ng-template modelId="kendoDropDownList" type="kendoDropDownListHeaderTemplate">
+
+                <p>LIST HEADER TEMPLATE</p>
+
+            </ng-template>
+
+        </dynamic-form-kendo-control>
+
     </form>
+
+    <pre>{{formGroup.value | json}}</pre>
 
 </div>

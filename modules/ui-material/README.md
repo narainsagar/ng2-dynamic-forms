@@ -1,32 +1,46 @@
-#ng2 Dynamic Forms Material UI
+# ng2 Dynamic Forms Material UI
 
-## Usage
+## Installation
+```
+npm install @ng2-dynamic-forms/ui-material -S
+```
 
-Please import all `@angular2-material` `NgModule`s in your app root `NgModule`:
-
+## Import
 ```ts
 @NgModule({
 
     imports: [
-        BrowserModule,
-        FormsModule,
+        // ...
         ReactiveFormsModule,
-        RouterModule,
-        appRouting,
-        DynamicFormsMaterialUIModule,
-        MdButtonModule.forRoot(),
-        MdCheckboxModule.forRoot(),
-        MdInputModule.forRoot(),
-        MdRadioModule.forRoot(),
-    ],
-    declarations: [
-        //...
-    ],
-    providers: [
-        //...
-    ],
-    bootstrap: [AppComponent]
+        BrowserAnimationsModule,
+        DynamicFormsCoreModule.forRoot(),
+        DynamicFormsMaterialUIModule
+    ]
 })
 
 export class AppModule {}
 ```
+
+## Usage
+```ts
+<form [formGroup]="myFormGroup">
+
+    <dynamic-form-material-control *ngFor="let controlModel of myFormModel"
+                                   [group]="myFormGroup"
+                                   [model]="controlModel"></dynamic-form-material-control>
+</form>
+```
+
+## Form Controls
+
+|                                      Control                                      	|            Model            	| Required Property 	|
+|:---------------------------------------------------------------------------------:	|:---------------------------:	|:-----------------:	|
+| **[Autocomplete](https://material.angular.io/components/component/autocomplete)** 	| `DynamicInputModel`         	|       `list`      	|
+|     **[Checkbox](https://material.angular.io/components/component/checkbox)**     	| `DynamicCheckboxModel`      	|         –         	|
+|  **[Checkbox Group](https://material.angular.io/components/component/checkbox)**  	| `DynamicCheckboxGroupModel` 	|         –         	|
+|        **[Input](https://material.angular.io/components/component/input)**        	| `DynamicInputModel`         	|         –         	|
+|     **[Radio Group](https://material.angular.io/components/component/radio)**     	| `DynamicRadioGroupModel`    	|         –         	|
+|       **[Select](https://material.angular.io/components/component/select)**       	| `DynamicSelectModel`        	|         –         	|
+|       **[Slider](https://material.angular.io/components/component/slider)**       	| `DynamicSliderModel`        	|         –         	|
+|  **[SlideToggle](https://material.angular.io/components/component/slide-toggle)** 	| `DynamicSwitchModel`        	|         –         	|
+|       **[Textarea](https://material.angular.io/components/component/input)**      	| `DynamicTextAreaModel`      	|         –         	|

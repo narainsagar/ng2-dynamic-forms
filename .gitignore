@@ -3,11 +3,16 @@
 npm-debug.log
 
 coverage/
+dist/
 docs/
 @ng2-dynamic-forms/
 
+example/aot/
 example/app/**/*.js
 example/app/**/*.js.map
 example/app/**/*.d.ts
+example/dist
+example/fonts
+example/images
 
 node_modules/

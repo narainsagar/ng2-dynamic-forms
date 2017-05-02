@@ -1,43 +1,16 @@
-<div [formGroup]="controlGroup"
-     [ngClass]="model.cls.element.container"
-     [ngSwitch]="model.type">
-
-    <fieldset *ngSwitchCase="'CHECKBOX_GROUP'"
-              [dynamicId]="bindId && model.id"
-              [formGroupName]="model.id"
-              [name]="model.name"
-              [ngClass]="model.cls.element.control">
-
-        <legend *ngIf="model.legend" [innerHTML]="model.legend"></legend>
-
-        <div *ngFor="let item of model.group" [ngClass]="item.cls.grid.container">
-
-            <div [ngClass]="item.cls.grid.control">
-
-                <p-checkbox binary="true"
-                            [dynamicId]="bindId && item.id"
-                            [formControlName]="item.id"
-                            [name]="model.name"
-                            [value]="item.value"
-                            [ngClass]="item.cls.element.control"></p-checkbox>
-            </div>
-
-            <div [ngClass]="item.cls.grid.label">
-
-                <label [attr.for]="item.id" [innerHTML]="item.label" [ngClass]="item.cls.element.label"></label>
-
-            </div>
-
-        </div>
-
-    </fieldset>
+<div [formGroup]="group" [ngClass]="model.cls.element.container">
 
 
-    <fieldset *ngSwitchCase="'RADIO_GROUP'" role="radiogroup"
+    <ng-template *ngIf="hasStartTemplate && type !== 1"
+                 [ngTemplateOutlet]="template"
+                 [ngTemplateOutletContext]="model"></ng-template>
+
+
+    <fieldset *ngIf="type === 12" role="radiogroup"
               [attr.tabindex]="model.tabIndex"
               [dynamicId]="bindId && model.id"
               [name]="model.name"
-              (change)="onChange($event)">
+              (change)="onValueChange($event)">
 
         <legend *ngIf="model.legend" [innerHTML]="model.legend"></legend>
 
@@ -46,52 +19,34 @@
             <div [ngClass]="model.cls.grid.control">
 
                 <p-radioButton [formControlName]="model.id"
+                               [label]="option.label"
                                [name]="model.name"
-                               [(ngModel)]="model.value"
                                [value]="option.value"></p-radioButton>
             </div>
-
+            <!--
             <div [ngClass]="model.cls.grid.label">
 
                 <label [attr.for]="model.id" [innerHTML]="option.label" [ngClass]="model.cls.element.label"></label>
 
             </div>
-
+            -->
         </div>
 
     </fieldset>
 
 
-    <div *ngIf="!isRadioGroup && !isCheckboxGroup" [ngClass]="model.cls.grid.container">
+    <div *ngIf="type !== 12" [ngClass]="model.cls.grid.container">
 
-        <div *ngIf="!isCheckbox && model.label" [ngClass]="model.cls.grid.label">
+        <div *ngIf="type !== 4 && model.label !== null" [ngClass]="model.cls.grid.label">
 
             <label [attr.for]="model.id" [innerHTML]="model.label" [ngClass]="model.cls.element.label"></label>
 
         </div>
 
 
-        <div [ngClass]="model.cls.grid.control">
+        <div [ngClass]="model.cls.grid.control" [ngSwitch]="type">
 
-            <fieldset *ngSwitchCase="'GROUP'"
-                      [dynamicId]="bindId && model.id"
-                      [formGroupName]="model.id"
-                      [name]="model.name"
-                      [ngClass]="model.cls.element.control">
-
-                <legend *ngIf="model.legend" [innerHTML]="model.legend"></legend>
-
-                <dynamic-form-primeng-control *ngFor="let controlModel of model.group"
-                                              [controlGroup]="control"
-                                              [model]="controlModel"
-                                              [nestedTemplate]="customTemplate"
-                                              (blur)="onBlur($event)"
-                                              (change)="onChange($event)"
-                                              (focus)="onFocus($event)"></dynamic-form-primeng-control>
-            </fieldset>
-
-
-            <div *ngSwitchCase="'ARRAY'"
+            <div *ngSwitchCase="1"
                  [dynamicId]="bindId && model.id"
                  [formArrayName]="model.id"
                  [ngClass]="model.cls.element.control">
@@ -100,69 +55,158 @@
 
                     <dynamic-form-primeng-control *ngFor="let controlModel of groupModel.group"
                                                   [bindId]="false"
-                                                  [controlGroup]="control.at(idx)"
+                                                  [group]="control.at(idx)"
+                                                  [hasErrorMessaging]="controlModel.hasErrorMessages"
                                                   [model]="controlModel"
-                                                  [nestedTemplate]="nestedTemplate"
-                                                  (blur)="onBlur($event)"
-                                                  (change)="onChange($event)"
-                                                  (focus)="onFocus($event)"></dynamic-form-primeng-control>
+                                                  [nestedTemplates]="templateDirectives"
+                                                  (blur)="onFocusChange($event)"
+                                                  (change)="onValueChange($event)"
+                                                  (focus)="onFocusChange($event)"></dynamic-form-primeng-control>
 
-                    <template [ngTemplateOutlet]="customTemplate || nestedTemplate"
-                              [ngOutletContext]="groupModel"></template>
+                    <ng-template [ngTemplateOutlet]="template" [ngTemplateOutletContext]="groupModel"></ng-template>
 
                 </fieldset>
 
             </div>
 
 
-            <input *ngSwitchCase="'INPUT'" pInputText
-                   [attr.accept]="model.accept"
-                   [attr.autoComplete]="model.autoComplete"
-                   [attr.list]="model.listId"
-                   [attr.max]="model.max"
-                   [attr.min]="model.min"
-                   [attr.multiple]="model.multiple"
-                   [attr.step]="model.step"
-                   [attr.tabindex]="model.tabIndex"
-                   [autofocus]="model.autoFocus"
-                   [dynamicId]="bindId && model.id"
-                   [formControlName]="model.id"
-                   [maxlength]="model.maxLength"
-                   [minlength]="model.minLength"
-                   [name]="model.name"
-                   [ngClass]="model.cls.element.control"
-                   [pattern]="model.pattern"
-                   [placeholder]="model.placeholder"
-                   [readonly]="model.readOnly"
-                   [required]="model.required"
-                   [spellcheck]="model.spellCheck"
-                   [type]="model.inputType"
-                   (blur)="onBlur($event)"
-                   (change)="onChange($event)"
-                   (focus)="onFocus($event)"/>
-
-            <datalist *ngIf="model.list" [id]="model.listId">
-
-                <option *ngFor="let option of model.list" [value]="option">
-
-            </datalist>
+            <p-autoComplete *ngSwitchCase="2"
+                            [dynamicId]="bindId && model.id"
+                            [formControlName]="model.id"
+                            [multiple]="model.multiple"
+                            [placeholder]="model.placeholder"
+                            [suggestions]="suggestions"
+                            (change)="onValueChange($event)"
+                            (completeMethod)="onAutoComplete($event)"></p-autoComplete>
 
 
-            <p-checkbox *ngSwitchCase="'CHECKBOX'" binary="true"
+            <p-calendar *ngSwitchCase="3"
+                        [dateFormat]="model.format"
+                        [defaultDate]="model.focusedDate"
                         [dynamicId]="bindId && model.id"
                         [formControlName]="model.id"
+                        [inline]="model.inline"
+                        [maxDate]="model.max"
+                        [minDate]="model.min"
+                        [monthNavigator]="false"
+                        [ngClass]="model.cls.element.control"
+                        [placeholder]="model.placeholder"
+                        [showIcon]="true"
+                        [showSeconds]="model.showSeconds"
+                        [timeOnly]="model.type === 'TIMEPICKER'"
+                        [yearNavigator]="false"></p-calendar>
+
+
+            <p-checkbox *ngSwitchCase="4"
+                        binary="true"
+                        [dynamicId]="bindId && model.id"
+                        [formControlName]="model.id"
+                        [label]="model.label"
                         [name]="model.name"
                         [ngClass]="model.cls.element.control"
                         [value]="model.value"></p-checkbox>
 
 
-            <p-dropdown *ngSwitchCase="'SELECT'"
+            <p-chips *ngSwitchCase="5"
+                     [dynamicId]="bindId && model.id"
+                     [formControlName]="model.id"
+                     [ngClass]="model.cls.element.control"
+                     (change)="onValueChange($event)"></p-chips>
+
+
+            <p-dropdown *ngSwitchCase="6"
                         [dynamicId]="bindId && model.id"
                         [formControlName]="model.id"
-                        [options]="model.options"></p-dropdown>
+                        [options]="model.options"
+                        (onChange)="onValueChange($event)"></p-dropdown>
 
 
-            <textarea *ngSwitchCase="'TEXTAREA'" pInputTextarea
+            <p-editor *ngSwitchCase="7"
+                      [dynamicId]="bindId && model.id"
+                      [formControlName]="model.id"
+                      (onTextChange)="onValueChange($event)"></p-editor>
+
+
+            <fieldset *ngSwitchCase="8"
+                      [dynamicId]="bindId && model.id"
+                      [formGroupName]="model.id"
+                      [name]="model.name"
+                      [ngClass]="model.cls.element.control">
+
+                <legend *ngIf="model.legend" [innerHTML]="model.legend"></legend>
+
+                <dynamic-form-primeng-control *ngFor="let controlModel of model.group"
+                                              [group]="control"
+                                              [hasErrorMessaging]="controlModel.hasErrorMessages"
+                                              [model]="controlModel"
+                                              [nestedTemplates]="templateDirectives"
+                                              (blur)="onFocusChange($event)"
+                                              (change)="onValueChange($event)"
+                                              (focus)="onFocusChange($event)"></dynamic-form-primeng-control>
+            </fieldset>
+
+
+            <ng-container *ngSwitchCase="9">
+
+                <input pInputText
+                       [attr.accept]="model.accept"
+                       [attr.autoComplete]="model.autoComplete"
+                       [attr.list]="model.listId"
+                       [attr.max]="model.max"
+                       [attr.min]="model.min"
+                       [attr.multiple]="model.multiple"
+                       [attr.step]="model.step"
+                       [attr.tabindex]="model.tabIndex"
+                       [autofocus]="model.autoFocus"
+                       [dynamicId]="bindId && model.id"
+                       [formControlName]="model.id"
+                       [maxlength]="model.maxLength"
+                       [minlength]="model.minLength"
+                       [name]="model.name"
+                       [ngClass]="model.cls.element.control"
+                       [pattern]="model.pattern"
+                       [placeholder]="model.placeholder"
+                       [readonly]="model.readOnly"
+                       [required]="model.required"
+                       [spellcheck]="model.spellCheck"
+                       [type]="model.inputType"
+                       (blur)="onFocusChange($event)"
+                       (change)="onValueChange($event)"
+                       (focus)="onFocusChange($event)"/>
+
+                <datalist *ngIf="model.list" [id]="model.listId">
+
+                    <option *ngFor="let option of model.list" [value]="option">
+
+                </datalist>
+
+            </ng-container>
+
+
+            <p-inputSwitch *ngSwitchCase="10"
+                           [dynamicId]="bindId && model.id"
+                           [formControlName]="model.id"
+                           [onLabel]="model.onLabel"
+                           [offLabel]="model.offLabel"
+                           (onChange)="onValueChange($event)"></p-inputSwitch>
+
+
+            <p-multiSelect *ngSwitchCase="11"
+                           [dynamicId]="bindId && model.id"
+                           [formControlName]="model.id"
+                           [options]="model.options"
+                           (onChange)="onValueChange($event)"></p-multiSelect>
+
+
+            <p-slider *ngSwitchCase="13"
+                      [dynamicId]="bindId && model.id"
+                      [formControlName]="model.id"
+                      [min]="model.min"
+                      [max]="model.max"
+                      [step]="model.step"></p-slider>
+
+
+            <textarea *ngSwitchCase="14" pInputTextarea
                       [attr.tabindex]="model.tabIndex"
                       [cols]="model.cols"
                       [dynamicId]="bindId && model.id"
@@ -177,19 +221,39 @@
                       [rows]="model.rows"
                       [spellcheck]="model.spellCheck"
                       [wrap]="model.wrap"
-                      (blur)="onBlur($event)"
-                      (change)="onChange($event)"
-                      (focus)="onFocus($event)"></textarea>
+                      (blur)="onFocusChange($event)"
+                      (change)="onValueChange($event)"
+                      (focus)="onFocusChange($event)"></textarea>
 
         </div>
 
-
-        <div *ngIf="isCheckbox" [ngClass]="model.cls.grid.label">
+        <!--
+        <div *ngIf="type === 4" [ngClass]="model.cls.grid.label">
 
             <label [attr.for]="model.id" [innerHTML]="model.label" [ngClass]="model.cls.element.label"></label>
 
         </div>
+        -->
+
+        <ul *ngIf="hasErrorMessaging" [ngClass]="model.cls.grid.errors">
+
+            <li class="ui-message ui-messages-error ui-corner-all"
+                [class.ui-helper-hidden]="!showErrorMessages"
+                [ngClass]="model.cls.element.errors">
+
+                <span *ngFor="let message of errorMessages">{{message}}</span>
+
+            </li>
+
+        </ul>
 
     </div>
+
+
+    <ng-template *ngIf="hasEndTemplate && type !== 1"
+                 [ngTemplateOutlet]="template"
+                 [ngTemplateOutletContext]="model"></ng-template>
+
+    <ng-content></ng-content>
 
 </div>

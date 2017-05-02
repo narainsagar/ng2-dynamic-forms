@@ -1,4 +1,3 @@
-import {Validators} from "@angular/forms";
 import {
     DYNAMIC_FORM_CONTROL_TYPE_TEXTAREA,
     DYNAMIC_FORM_TEXTAREA_WRAP_SOFT,
@@ -7,45 +6,50 @@ import {
 
 describe("DynamicTextAreaModel test suite", () => {
 
-    describe("default model test suite", () => {
-
-        let config = {
-            id: "default",
-            validators: [Validators.required]
+    let model: DynamicTextAreaModel,
+        config: any = {
+            id: "textarea",
+            validators: {required: null, minLength: 5}
         };
-        let defaultModel: DynamicTextAreaModel;
 
-        beforeEach(() => {
-            defaultModel = new DynamicTextAreaModel(config);
-        });
+    beforeEach(() => model = new DynamicTextAreaModel(config));
 
-        it("tests if default model is correctly initialized", () => {
+    it("should initialize correctly", () => {
 
-            expect(defaultModel.cols).toBe(20);
-            expect(defaultModel.disabled).toBe(false);
-            expect(defaultModel.errorMessages).toBeNull();
-            expect(defaultModel.hasErrorMessages).toBe(false);
-            expect(defaultModel.id).toEqual(config.id);
-            expect(defaultModel.label).toBeNull();
-            expect(defaultModel.name).toEqual(defaultModel.id);
-            expect(defaultModel.rows).toBe(2);
-            expect(defaultModel.type).toEqual(DYNAMIC_FORM_CONTROL_TYPE_TEXTAREA);
-            expect(defaultModel.value).toBeNull();
-            expect(defaultModel.wrap).toEqual(DYNAMIC_FORM_TEXTAREA_WRAP_SOFT);
-        });
-
-        it("should serialize correctly", () => {
-
-            let json = JSON.parse(JSON.stringify(defaultModel));
-
-            expect(json.id).toEqual(defaultModel.id);
-            expect(json.cols).toBe(defaultModel.cols);
-            expect(json.validators.length).toBe(defaultModel.validators.length);
-            expect(json.validators[0]).toEqual("required");
-            expect(json.value).toBe(defaultModel.value);
-            expect(json.type).toEqual(DYNAMIC_FORM_CONTROL_TYPE_TEXTAREA);
-        });
-
+        expect(model.cols).toBe(20);
+        expect(model.disabled).toBe(false);
+        expect(model.errorMessages).toBeNull();
+        expect(model.hasErrorMessages).toBe(false);
+        expect(model.id).toEqual(config.id);
+        expect(model.label).toBeNull();
+        expect(model.name).toEqual(model.id);
+        expect(model.rows).toBe(2);
+        expect(model.type).toEqual(DYNAMIC_FORM_CONTROL_TYPE_TEXTAREA);
+        expect(model.value).toBeNull();
+        expect(model.wrap).toEqual(DYNAMIC_FORM_TEXTAREA_WRAP_SOFT);
     });
 
+    it("should throw when no model id is specified", () => {
+
+        expect(() => new DynamicTextAreaModel({}))
+            .toThrow(new Error("string id must be specified for DynamicFormControlModel"));
+    });
+
+    it("should set disabled property correctly", () => {
+
+        model.disabledUpdates.next(true);
+
+        expect(model.disabled).toBe(true);
+    });
+
+    it("should serialize correctly", () => {
+
+        let json = JSON.parse(JSON.stringify(model));
+
+        expect(json.id).toEqual(model.id);
+        expect(json.cols).toBe(model.cols);
+        expect(Object.keys(json.validators).length).toBe(Object.keys(model.validators).length);
+        expect(json.value).toBe(model.value);
+        expect(json.type).toEqual(DYNAMIC_FORM_CONTROL_TYPE_TEXTAREA);
+    });
 });

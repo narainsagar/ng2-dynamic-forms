@@ -1,17 +1,20 @@
-import {RouterModule, Routes} from "@angular/router";
-import {BasicExampleComponent} from "./basic/basic-example.component";
-import {BootstrapExampleComponent} from "./bootstrap/bootstrap-example.component";
-import {FoundationExampleComponent} from "./foundation/foundation-example.component";
-//import {KendoExampleComponent} from "./kendo/kendo-example.component";
-import {MaterialExampleComponent} from "./material/material-example.component";
-import {PrimeNGExampleComponent} from "./primeng/primeng-example.component";
+import { RouterModule, Route } from "@angular/router";
+import { BasicExampleComponent } from "./basic/basic-example.component";
+import { BootstrapExampleComponent } from "./bootstrap/bootstrap-example.component";
+import { FoundationExampleComponent } from "./foundation/foundation-example.component";
+import { KendoExampleComponent } from "./kendo/kendo-example.component";
+import { MaterialExampleComponent } from "./material/material-example.component";
+import { NGBootstrapExampleComponent } from "./ng-bootstrap/ng-bootstrap-example.component";
+import { PrimeNGExampleComponent } from "./primeng/primeng-example.component";
+import { NgModule } from "@angular/core";
 
-export const appRoutes: Routes = [
+const APP_ROUTES: Route[] = [
     {
         path: "",
         redirectTo: "/example-bootstrap",
         pathMatch: "full"
     },
+
     {
         path: "example-basic",
         component: BasicExampleComponent,
@@ -21,6 +24,7 @@ export const appRoutes: Routes = [
             bgColor: "gray"
         }
     },
+
     {
         path: "example-bootstrap",
         component: BootstrapExampleComponent,
@@ -30,6 +34,7 @@ export const appRoutes: Routes = [
             bgColor: "#6f5499"
         }
     },
+
     {
         path: "example-foundation",
         component: FoundationExampleComponent,
@@ -39,6 +44,7 @@ export const appRoutes: Routes = [
             bgColor: "#2199e8"
         }
     },
+
     {
         path: "example-material",
         component: MaterialExampleComponent,
@@ -48,7 +54,17 @@ export const appRoutes: Routes = [
             bgColor: "#009688"
         }
     },
-    /*
+
+    {
+        path: "example-ng-bootstrap",
+        component: NGBootstrapExampleComponent,
+        data: {
+            title: "NG Bootstrap UI",
+            href: "https://github.com/udos86/ng2-dynamic-forms/blob/master/example/app/ng-bootstrap/ng-bootstrap-example.model.ts",
+            bgColor: "#1b95e0"
+        }
+    },
+
     {
         path: "example-kendo",
         component: KendoExampleComponent,
@@ -58,7 +74,7 @@ export const appRoutes: Routes = [
             bgColor: "#ff5747"
         }
     },
-    */
+
     {
         path: "example-primeng",
         component: PrimeNGExampleComponent,
@@ -67,9 +83,19 @@ export const appRoutes: Routes = [
             href: "https://github.com/udos86/ng2-dynamic-forms/blob/master/example/app/primeng/primeng-example.model.ts",
             bgColor: "#DB2226"
         }
+    },
+
+    {
+        path: "example-async",
+        loadChildren: "app/async/async-example.module#AsyncExampleModule"
     }
 ];
 
-export const appRoutingProviders: any[] = [];
+@NgModule({
 
-export const appRouting: any = RouterModule.forRoot(appRoutes);
+    imports: [RouterModule.forRoot(APP_ROUTES)],
+    exports: [RouterModule]
+})
+
+export class AppRoutingModule {
+}

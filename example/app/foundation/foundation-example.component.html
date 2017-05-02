@@ -1,25 +1,32 @@
 <div class="overflow-hidden content-margin" style="width: 50%;">
 
-    <form class="form-horizontal" [formGroup]="form">
+    <form class="form-horizontal" [formGroup]="formGroup">
 
-        <dynamic-form-foundation-sites-control *ngFor="let controlModel of dynamicFormModel"
-                                               [controlGroup]="form"
+        <dynamic-form-foundation-sites-control *ngFor="let controlModel of formModel"
+                                               [group]="formGroup"
                                                [model]="controlModel"
-                                               [hasErrorMessaging]="controlModel.hasErrorMessages">
+                                               [hasErrorMessaging]="controlModel.hasErrorMessages"
+                                               (blur)="onBlur($event)"
+                                               (change)="onChange($event)"
+                                               (focus)="onFocus($event)">
 
-            <template let-context="context" let-index="index">
+            <ng-template modelId="foundationFormArray" let-context="context" let-index="index">
 
-                <div class="small-3 columns">
+                <div class="small-4 columns">
 
                     <button type="button" class="button alert rounded" (click)="remove(context, index)">&#10005;</button>
+                    <button type="button" class="button primary rounded" (click)="move(context, index, -1)">&#9650;</button>
+                    <button type="button" class="button primary rounded" (click)="move(context, index, 1)">&#9660;</button>
                     <button type="button" class="button success rounded" (click)="insert(context, index + 1)">&#43;</button>
 
                 </div>
 
-            </template>
+            </ng-template>
 
         </dynamic-form-foundation-sites-control>
 
     </form>
+
+    <pre>{{formGroup.value | json}}</pre>
 
 </div>

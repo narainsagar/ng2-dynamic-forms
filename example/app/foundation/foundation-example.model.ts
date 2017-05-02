@@ -1,13 +1,13 @@
 import {
     DynamicCheckboxModel,
     DynamicCheckboxGroupModel,
+    DynamicFormArrayModel,
     DynamicInputModel,
-    DynamicSelectModel,
     DynamicRadioGroupModel,
+    DynamicSelectModel,
+    DynamicSwitchModel,
     DynamicTextAreaModel,
-    DynamicFormArrayModel
 } from "@ng2-dynamic-forms/core";
-import {Validators} from "@angular/forms";
 
 export const FOUNDATION_EXAMPLE_MODEL = [
 
@@ -94,7 +94,9 @@ export const FOUNDATION_EXAMPLE_MODEL = [
             placeholder: "example input",
             prefix: "Prefix",
             suffix: "Suffix",
-            validators: [Validators.required],
+            validators: {
+                required: null
+            },
             errorMessages: {
                 required: "{{label}} is required"
             }
@@ -144,16 +146,40 @@ export const FOUNDATION_EXAMPLE_MODEL = [
         }
     ),
 
+    new DynamicSwitchModel(
+        {
+            id: "foundationSwitch",
+            label: "Example Switch",
+            offLabel: "Off",
+            onLabel: "On",
+            value: false
+        },
+        {
+            element: {
+                container: "row",
+                control: "small",
+                label: "text-right font-bold"
+            },
+            grid: {
+                control: "small-9 columns",
+                label: "small-3 columns"
+            }
+        }
+    ),
+
     new DynamicTextAreaModel(
         {
             id: "foundationTextArea",
             label: "Example Textarea",
             rows: 5,
             placeholder: "example Textarea",
-            validators: [Validators.required, Validators.pattern("[a-c]+")],
+            validators: {
+                required: null,
+                pattern: "[a-c]+"
+            },
             errorMessages: {
                 required: "{{label}} is required",
-                pattern: "{{label}} does not match pattern [a-c]"
+                pattern: "{{label}} does not match pattern {{validator.requiredPattern}}"
             }
         },
         {
@@ -198,7 +224,7 @@ export const FOUNDATION_EXAMPLE_MODEL = [
                         },
                         {
                             grid: {
-                                control: "small-9 columns",
+                                control: "small-8 columns",
                             }
                         }
                     )
@@ -207,7 +233,7 @@ export const FOUNDATION_EXAMPLE_MODEL = [
         },
         {
             element: {
-                container: "row float-clear",
+                container: "row float-clear form-array",
                 control: "row",
                 label: "text-right font-bold"
             },

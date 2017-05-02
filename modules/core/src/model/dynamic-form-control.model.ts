@@ -1,13 +1,16 @@
-import {DynamicFormControlRelationGroup} from "./dynamic-form-control-relation.model";
-import {Subject} from "rxjs/Subject";
-import {serializable} from "../decorator/serializable.decorator";
-import {getValue, isEmptyString, serialize} from "../utils";
+import { DynamicFormControlRelationGroup } from "./dynamic-form-control-relation.model";
+import { Subject } from "rxjs/Subject";
+import { serializable, serialize } from "../decorator/serializable.decorator";
+import { merge, isBoolean, isEmptyString } from "../utils";
+
+export type DynamicValidatorsMap = {[validatorName: string]: any};
 
 export interface Cls {
 
     container?: string;
     control?: string;
     errors?: string;
+    hint?: string;
     label?: string;
 }
 
@@ -22,7 +25,7 @@ export interface DynamicFormControlModelConfig {
     disabled?: boolean;
     id?: string;
     label?: string;
-    relation?: Array<DynamicFormControlRelationGroup>;
+    relation?: DynamicFormControlRelationGroup[];
 }
 
 export abstract class DynamicFormControlModel {
@@ -33,24 +36,24 @@ export abstract class DynamicFormControlModel {
     @serializable() id: string;
     @serializable() label: string | null;
     @serializable() name: string;
-    @serializable() relation: Array<DynamicFormControlRelationGroup>;
+    @serializable() relation: DynamicFormControlRelationGroup[];
 
     abstract readonly type: string;
 
-    constructor(config: DynamicFormControlModelConfig, cls?: ClsConfig) {
+    constructor(config: DynamicFormControlModelConfig, cls: ClsConfig = {}) {
 
         if (isEmptyString(config.id)) {
             throw new Error("string id must be specified for DynamicFormControlModel");
         }
 
-        this.cls.element = getValue(cls, "element", {container: "", control: "", errors: "", label: ""});
-        this.cls.grid = getValue(cls, "grid", {container: "", control: "", errors: "", label: ""});
+        this.cls.element = merge(cls.element, {container: "", control: "", errors: "", hint: "", label: ""});
+        this.cls.grid = merge(cls.grid, {container: "", control: "", errors: "", hint: "", label: ""});
 
-        this._disabled = getValue(config, "disabled", false);
+        this._disabled = isBoolean(config.disabled) ? config.disabled : false;
         this.id = config.id;
-        this.label = getValue(config, "label", null);
+        this.label = config.label || null;
         this.name = this.id;
-        this.relation = getValue(config, "relation", []);
+        this.relation = Array.isArray(config.relation) ? config.relation : [];
 
         this.disabledUpdates = new Subject<boolean>();
         this.disabledUpdates.subscribe((value: boolean) => this.disabled = value);

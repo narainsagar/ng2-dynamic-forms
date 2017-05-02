@@ -1,14 +1,14 @@
-import {ClsConfig} from "../dynamic-form-control.model";
-import {DynamicInputControlModel, DynamicInputControlModelConfig} from "../dynamic-input-control.model";
-import {serializable} from "../../decorator/serializable.decorator";
-import {getValue} from "../../utils";
+import { ClsConfig } from "../dynamic-form-control.model";
+import { DynamicInputControlModel, DynamicInputControlModelConfig } from "../dynamic-input-control.model";
+import { serializable } from "../../decorator/serializable.decorator";
+import { isNumber } from "../../utils";
 
 export const DYNAMIC_FORM_CONTROL_TYPE_TEXTAREA = "TEXTAREA";
 
 export const DYNAMIC_FORM_TEXTAREA_WRAP_HARD = "hard";
 export const DYNAMIC_FORM_TEXTAREA_WRAP_SOFT = "soft";
 
-export interface DynamicTextAreaModelConfig extends DynamicInputControlModelConfig {
+export interface DynamicTextAreaModelConfig extends DynamicInputControlModelConfig<string> {
 
     cols?: number;
     rows?: number;
@@ -27,8 +27,8 @@ export class DynamicTextAreaModel extends DynamicInputControlModel<string> {
 
         super(config, cls);
 
-        this.cols = getValue(config, "cols", 20);
-        this.rows = getValue(config, "rows", 2);
-        this.wrap = getValue(config, "wrap", DYNAMIC_FORM_TEXTAREA_WRAP_SOFT);
+        this.cols = isNumber(config.cols) ? config.cols : 20;
+        this.rows = isNumber(config.rows) ? config.rows : 2;
+        this.wrap = config.wrap || DYNAMIC_FORM_TEXTAREA_WRAP_SOFT;
     }
 }

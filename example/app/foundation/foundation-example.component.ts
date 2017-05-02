@@ -1,54 +1,67 @@
-import {Component, OnInit, ViewEncapsulation} from "@angular/core";
-import {FormGroup, FormControl, FormArray} from "@angular/forms";
+import { Component, OnInit, ViewEncapsulation } from "@angular/core";
+import { FormGroup, FormControl, FormArray } from "@angular/forms";
 import {
     DynamicFormService,
     DynamicCheckboxModel,
     DynamicFormControlModel,
     DynamicFormArrayModel
 } from "@ng2-dynamic-forms/core";
-import {FOUNDATION_EXAMPLE_MODEL} from "./foundation-example.model";
+import { FOUNDATION_EXAMPLE_MODEL } from "./foundation-example.model";
 
 @Component({
 
     moduleId: module.id,
     selector: "dynamic-form-foundation-example",
-    styleUrls: ["../../../node_modules/foundation-sites/dist/foundation.min.css"],
+    styleUrls: ["../../../node_modules/foundation-sites/dist/css/foundation.css"],
     templateUrl: "./foundation-example.component.html",
     encapsulation: ViewEncapsulation.None
 })
 
 export class FoundationExampleComponent implements OnInit {
 
-    dynamicFormModel: Array<DynamicFormControlModel>;
-    form: FormGroup;
+    formModel: DynamicFormControlModel[] = FOUNDATION_EXAMPLE_MODEL;
+    formGroup: FormGroup;
 
-    sampleCheckboxControl: FormControl;
-    sampleCheckboxModel: DynamicCheckboxModel;
+    checkboxControl: FormControl;
+    checkboxModel: DynamicCheckboxModel;
 
-    sampleArrayControl: FormArray;
-    sampleArrayModel: DynamicFormArrayModel;
+    arrayControl: FormArray;
+    arrayModel: DynamicFormArrayModel;
 
-    constructor(private dynamicFormService: DynamicFormService) {
-        this.dynamicFormModel = FOUNDATION_EXAMPLE_MODEL;
-    }
+    constructor(private formService: DynamicFormService) {}
 
     ngOnInit() {
 
-        this.form = this.dynamicFormService.createFormGroup(this.dynamicFormModel);
+        this.formGroup = this.formService.createFormGroup(this.formModel);
 
-        this.sampleCheckboxControl = <FormControl> this.form.controls["foundationCheckbox"]; // Type assertion for having updateValue method available
-        this.sampleCheckboxModel = <DynamicCheckboxModel> this.dynamicFormService.findById("foundationCheckbox", this.dynamicFormModel);
-        //this.exampleCheckboxControl.valueChanges.subscribe((value: string) => console.log("foundation checkbox field changed to: ", value, typeof value));
+        this.checkboxControl = this.formGroup.controls["foundationCheckbox"] as FormControl;
+        this.checkboxModel = this.formService.findById("foundationCheckbox", this.formModel) as DynamicCheckboxModel;
 
-        this.sampleArrayControl = <FormArray> this.form.controls["foundationFormArray"];
-        this.sampleArrayModel = <DynamicFormArrayModel> this.dynamicFormService.findById("foundationFormArray", this.dynamicFormModel);
+        this.arrayControl = this.formGroup.controls["foundationFormArray"] as FormArray;
+        this.arrayModel = this.formService.findById("foundationFormArray", this.formModel) as DynamicFormArrayModel;
     }
 
     insert(context: DynamicFormArrayModel, index: number) {
-        this.dynamicFormService.insertFormArrayGroup(index, this.sampleArrayControl, context);
+        this.formService.insertFormArrayGroup(index, this.arrayControl, context);
     }
 
     remove(context: DynamicFormArrayModel, index: number) {
-        this.dynamicFormService.removeFormArrayGroup(index, this.sampleArrayControl, context);
+        this.formService.removeFormArrayGroup(index, this.arrayControl, context);
+    }
+
+    move(context: DynamicFormArrayModel, index: number, step: number) {
+        this.formService.moveFormArrayGroup(index, step, this.arrayControl, context);
+    }
+
+    onBlur($event) {
+        console.log(`BLUR event on ${$event.model.id}: `, $event);
+    }
+
+    onChange($event) {
+        console.log(`CHANGE event on ${$event.model.id}: `, $event);
+    }
+
+    onFocus($event) {
+        console.log(`FOCUS event on ${$event.model.id}: `, $event);
     }
 }
